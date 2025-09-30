@@ -163,7 +163,7 @@ export default function Auth() {
                 )}
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.556_0.25_274.4)] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[oklch(0.556_0.25_274.4)/25] transition hover:bg-[oklch(0.556_0.23_274.4)]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.556_0.25_274.4)] px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[oklch(0.556_0.23_274.4)]"
                 >
                   {copy.submitLabel} <ArrowRight className="h-4 w-4" />
                 </button>
