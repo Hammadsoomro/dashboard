@@ -39,15 +39,12 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
     >
       <div className="sticky top-6">
         <div className="flex flex-col gap-3">
-          <div className="rounded-2xl border border-black/5 bg-white/80 p-3 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
+          <div className="rounded-2xl border border-black/5 bg-white/80 p-3 pb-64 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
             <div className="flex items-center gap-3 px-1 pb-2">
               {!collapsed && (
-                <div className="space-y-0.5">
+                <div>
                   <p className="text-sm font-semibold text-neutral-900 dark:text-white">
                     Studio Admin
-                  </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Quick Create
                   </p>
                 </div>
               )}
@@ -82,16 +79,6 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
                 );
               })}
             </nav>
-          </div>
-          <div className="rounded-2xl border border-dashed border-black/10 bg-white/60 p-4 text-xs text-neutral-500 shadow-sm backdrop-blur dark:border-white/10 dark:bg-neutral-900/50 dark:text-neutral-400">
-            {!collapsed ? (
-              <p>
-                Need custom views? Use the settings panel to organize dashboards
-                and workflows.
-              </p>
-            ) : (
-              <p className="text-center leading-tight">Organize</p>
-            )}
           </div>
         </div>
       </div>
