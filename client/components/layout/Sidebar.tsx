@@ -58,7 +58,7 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
                 />
               </button>
             </div>
-            <nav className="space-y-1 pt-1 text-sm">
+            <nav className="flex-1 space-y-1 pt-1 text-sm">
               {items.map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.to;
