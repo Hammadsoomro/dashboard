@@ -1,13 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import {
+  Boxes,
+  ChevronLeft,
+  Inbox,
   LayoutDashboard,
   MessageSquareMore,
-  Inbox,
-  Boxes,
+  Settings,
   TrendingUp,
   Users2,
-  Settings,
-  ChevronLeft,
 } from "lucide-react";
 import { useMemo } from "react";
 
@@ -34,47 +34,66 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed left-4 top-20 z-40 transition-[width] ${collapsed ? "w-16" : "w-64"}`}
-      aria-label="Floating sidebar"
+      className={`shrink-0 transition-[width] duration-300 ${collapsed ? "w-20" : "w-64"}`}
+      aria-label="Sidebar navigation"
     >
-      <div className="rounded-2xl border border-black/5 bg-white/80 dark:bg-neutral-900/70 backdrop-blur shadow-lg">
-        <div className="p-2 flex items-center justify-between">
-          {!collapsed && (
-            <span className="px-2 py-1 text-xs font-medium text-muted-foreground">
-              Navigation
-            </span>
-          )}
-          <button
-            onClick={onCollapseToggle}
-            className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-md border border-black/5 bg-white/70 dark:bg-neutral-800/70 shadow-sm hover:bg-white/90 dark:hover:bg-neutral-800"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            <ChevronLeft
-              className={`h-4 w-4 transition-transform ${collapsed ? "rotate-180" : "rotate-0"}`}
-            />
-          </button>
-        </div>
-        <nav className="px-2 pb-2">
-          {items.map((it) => {
-            const active = pathname === it.to;
-            const Icon = it.icon;
-            return (
-              <Link
-                key={it.to}
-                to={it.to}
-                className={`group flex items-center gap-3 rounded-xl px-2 py-2.5 text-sm transition-colors ${
-                  active
-                    ? "bg-emerald-500 text-white shadow"
-                    : "text-muted-foreground hover:text-foreground hover:bg-black/5"
-                }`}
-                title={collapsed ? it.label : undefined}
+      <div className="sticky top-6">
+        <div className="flex flex-col gap-3">
+          <div className="rounded-2xl border border-black/5 bg-white/80 p-3 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
+            <div className="flex items-center gap-3 px-1 pb-2">
+              {!collapsed && (
+                <div className="space-y-0.5">
+                  <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                    Studio Admin
+                  </p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Quick Create
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={onCollapseToggle}
+                className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-md border border-black/5 bg-white/70 shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-800/70 dark:hover:bg-neutral-800"
+                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
-                <Icon className="h-5 w-5" />
-                {!collapsed && <span className="truncate">{it.label}</span>}
-              </Link>
-            );
-          })}
-        </nav>
+                <ChevronLeft
+                  className={`h-4 w-4 transition-transform ${collapsed ? "rotate-180" : "rotate-0"}`}
+                />
+              </button>
+            </div>
+            <nav className="space-y-1 pt-1 text-sm">
+              {items.map((item) => {
+                const Icon = item.icon;
+                const active = pathname === item.to;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 transition ${
+                      active
+                        ? "bg-emerald-500 text-white shadow"
+                        : "text-neutral-500 hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white"
+                    }`}
+                    title={collapsed ? item.label : undefined}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {!collapsed && <span className="truncate">{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+          <div className="rounded-2xl border border-dashed border-black/10 bg-white/60 p-4 text-xs text-neutral-500 shadow-sm backdrop-blur dark:border-white/10 dark:bg-neutral-900/50 dark:text-neutral-400">
+            {!collapsed ? (
+              <p>
+                Need custom views? Use the settings panel to organize dashboards
+                and workflows.
+              </p>
+            ) : (
+              <p className="text-center leading-tight">Organize</p>
+            )}
+          </div>
+        </div>
       </div>
     </aside>
   );
