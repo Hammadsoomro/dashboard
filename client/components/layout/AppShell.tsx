@@ -24,7 +24,7 @@ export default function AppShell({ children, center = false }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-[oklch(0.9789_0.0082_121.627)] dark:bg-neutral-950">
-      <div className="mx-auto flex min-h-screen max-w-[1440px] gap-6 px-4 pb-6 pt-4 sm:pt-6">
+      <div className="mx-auto flex min-h-screen max-w-[1440px] items-start gap-6 px-4 pb-6 pt-4 sm:pt-6">
         <Sidebar
           collapsed={collapsed}
           onCollapseToggle={() => setCollapsed((state) => !state)}
