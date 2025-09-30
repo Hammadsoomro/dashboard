@@ -149,6 +149,7 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
                   const isDisabled = item.status === "soon";
                   const content = (
                     <div
+                      aria-disabled={isDisabled || undefined}
                       className={cn(
                         "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition",
                         collapsed ? "justify-center" : "",
@@ -156,7 +157,7 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
                           ? "cursor-default text-neutral-400 dark:text-neutral-600"
                           : "text-neutral-600 hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white",
                         isActive &&
-                          "bg-amber-500 text-white shadow hover:bg-amber-500 dark:hover:bg-amber-500",
+                          "bg-amber-500 text-white sombra hover:bg-amber-500 dark:hover:bg-amber-500",
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -178,14 +179,22 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
 
                   if (!item.to || isDisabled) {
                     return (
-                      <div key={item.label} className="pointer-events-none">
+                      <div
+                        key={item.label}
+                        className="pointer-events-none"
+                        title={collapsed ? item.label : undefined}
+                      >
                         {content}
                       </div>
                     );
                   }
 
                   return (
-                    <Link key={item.to} to={item.to} title={collapsed ? item.label : undefined}>
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      title={collapsed ? item.label : undefined}
+                    >
                       {content}
                     </Link>
                   );
