@@ -39,8 +39,8 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
     >
       <div className="sticky top-6">
         <div className="flex flex-col gap-3">
-          <div className="rounded-2xl border border-black/5 bg-white/80 p-3 pb-64 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
-            <div className="flex items-center gap-3 px-1 pb-2">
+          <div className="flex flex-col rounded-2xl border border-black/5 bg-white/80 px-3 py-4 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
+            <div className="flex items-center gap-3 px-1 pb-3">
               {!collapsed && (
                 <div>
                   <p className="text-sm font-semibold text-neutral-900 dark:text-white">
