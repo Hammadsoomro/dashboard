@@ -1,93 +1,52 @@
-import { Link, useLocation } from "react-router-dom";
-import { Menu, SunMedium, Moon, UsersRound } from "lucide-react";
+import {
+  CircleUserRound,
+  Moon,
+  Search,
+  Settings,
+  SunMedium,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface TopNavProps {
-  onToggleSidebar?: () => void;
-  showSidebarToggle?: boolean;
-}
-
-export default function TopNav({
-  onToggleSidebar,
-  showSidebarToggle = false,
-}: TopNavProps) {
-  const { pathname } = useLocation();
-  const [scrolled, setScrolled] = useState(false);
+export default function TopNav() {
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     document.documentElement.classList.contains("dark") ? "dark" : "light",
   );
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 4);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     if (theme === "dark") document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
   }, [theme]);
 
-  const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/dashboard", label: "Dashboard" },
-    { to: "/team-chat", label: "Team Chat" },
-    { to: "/inbox", label: "Inbox" },
-  ];
-
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all ${scrolled ? "backdrop-blur bg-white/70 dark:bg-neutral-900/60 shadow-sm" : "bg-transparent"}`}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center gap-3">
-        {showSidebarToggle && (
-          <button
-            onClick={onToggleSidebar}
-            className="-ml-1 inline-flex h-8 w-8 items-center justify-center rounded-md border border-black/5 bg-white/70 dark:bg-neutral-800/70 shadow-sm hover:bg-white/90 dark:hover:bg-neutral-800"
-            aria-label="Toggle sidebar"
-          >
-            <Menu className="h-4 w-4" />
-          </button>
-        )}
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-emerald-400 to-sky-400 ring-1 ring-black/5 shadow" />
-          <span className="hidden sm:block">SoftPop CRM</span>
-        </Link>
-        <nav className="ml-auto hidden md:flex items-center gap-6 text-sm">
-          {navLinks.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className={`transition-colors hover:text-foreground ${pathname === l.to ? "text-foreground font-medium" : "text-muted-foreground"}`}
-            >
-              {l.label}
-            </Link>
-          ))}
-          <Link
-            to="/auth"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            Login
-          </Link>
-          <Link
-            to="/auth"
-            className="inline-flex items-center gap-2 rounded-md bg-emerald-500 text-white px-3 py-1.5 shadow hover:bg-emerald-600"
-          >
-            <UsersRound className="h-4 w-4" /> Register
-          </Link>
-          <button
-            aria-label="Toggle theme"
-            onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
-            className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-md border border-black/5 bg-white/70 dark:bg-neutral-800/70 shadow-sm hover:bg-white/90 dark:hover:bg-neutral-800"
-          >
-            {theme === "light" ? (
-              <Moon className="h-4 w-4" />
-            ) : (
-              <SunMedium className="h-4 w-4" />
-            )}
-          </button>
-        </nav>
+    <header className="sticky top-0 z-40">
+      <div className="flex h-16 items-center gap-3 rounded-2xl border border-black/5 bg-white/80 px-3 py-3 shadow-sm backdrop-blur transition dark:border-white/10 dark:bg-neutral-900/70">
+        <label className="relative flex-1 max-w-lg">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
+          <input
+            type="search"
+            placeholder="Search"
+            className="h-10 w-full rounded-xl border border-black/10 bg-white pl-9 pr-4 text-sm text-neutral-700 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/20 dark:border-white/10 dark:bg-neutral-900/60 dark:text-white"
+          />
+        </label>
+        <button
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white text-neutral-600 shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-neutral-200"
+          aria-label="Open settings"
+        >
+          <Settings className="h-5 w-5" />
+        </button>
+        <button
+          aria-label="Toggle theme"
+          onClick={() => setTheme((state) => (state === "light" ? "dark" : "light"))}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white text-neutral-600 shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-neutral-200"
+        >
+          {theme === "light" ? <Moon className="h-5 w-5" /> : <SunMedium className="h-5 w-5" />}
+        </button>
+        <button
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-gradient-to-br from-emerald-400 via-sky-400 to-indigo-500 text-white shadow-sm transition hover:brightness-110 dark:border-white/10"
+          aria-label="Account menu"
+        >
+          <CircleUserRound className="h-5 w-5" />
+        </button>
       </div>
     </header>
   );
