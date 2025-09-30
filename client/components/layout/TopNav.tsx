@@ -7,11 +7,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface TopNavProps {
-  sidebarOffset?: number;
-}
-
-export default function TopNav({ sidebarOffset = 256 }: TopNavProps) {
+export default function TopNav() {
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     document.documentElement.classList.contains("dark") ? "dark" : "light",
   );
