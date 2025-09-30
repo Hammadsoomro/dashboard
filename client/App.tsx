@@ -8,6 +8,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import TeamChat from "./pages/TeamChat";
+import Inbox from "./pages/Inbox";
+import Distributor from "./pages/Distributor";
+import SalesTracker from "./pages/SalesTracker";
+import TeamManagement from "./pages/TeamManagement";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
