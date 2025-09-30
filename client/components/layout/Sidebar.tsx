@@ -84,12 +84,12 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
   return (
     <aside
       className={cn(
-        "shrink-0 transition-[width] duration-300",
+        "sticky top-4 shrink-0 self-start transition-[width] duration-300",
         collapsed ? "w-24" : "w-72",
       )}
       aria-label="Sidebar navigation"
     >
-      <div className="flex h-full flex-col rounded-3xl border border-black/5 bg-white/80 p-4 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
+      <div className="flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
         <div className="flex items-center gap-3 pb-4">
           {!collapsed && (
             <div className="min-w-0">
@@ -134,7 +134,7 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
           )}
         </Link>
 
-        <nav className="flex-1 space-y-6 overflow-y-auto pb-4">
+        <nav className="flex-1 space-y-6 overflow-y-auto pb-4 pr-1">
           {sections.map((section) => (
             <div key={section.title} className="space-y-2">
               {!collapsed && (
@@ -204,7 +204,7 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
           ))}
         </nav>
 
-        <div className="mt-auto rounded-2xl border border-black/5 bg-white/70 p-3 dark:border-white/10 dark:bg-neutral-800/60">
+        <div className="mt-auto rounded-2xl border border-black/5 bg-white/90 p-3 dark:border-white/10 dark:bg-neutral-800/60">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               {user.avatarUrl ? (
