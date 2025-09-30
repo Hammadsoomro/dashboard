@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import TopNav from "./TopNav";
 import Sidebar from "./Sidebar";
 
@@ -9,21 +9,27 @@ export default function AppShell({
   children: ReactNode;
   center?: boolean;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const contentWrapperClass = useMemo(
+    () => `${center ? "mx-auto max-w-6xl" : "w-full"} px-2 sm:px-4 lg:px-6`,
+    [center],
+  );
 
   return (
-    <div className="min-h-screen">
-      <TopNav
-        showSidebarToggle
-        onToggleSidebar={() => setSidebarOpen((s) => !s)}
-      />
-      <Sidebar
-        collapsed={!sidebarOpen}
-        onCollapseToggle={() => setSidebarOpen((s) => !s)}
-      />
-      <main className={`pt-6 ${center ? "" : ""}`}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
-      </main>
+    <div className="min-h-screen bg-[oklch(0.9789_0.0082_121.627)] dark:bg-neutral-950">
+      <div className="mx-auto flex min-h-screen max-w-[1440px] gap-6 px-4 py-6">
+        <Sidebar
+          collapsed={collapsed}
+          onCollapseToggle={() => setCollapsed((state) => !state)}
+        />
+        <div className="flex flex-1 flex-col">
+          <TopNav />
+          <main className="flex-1 pt-6 pb-10">
+            <div className={contentWrapperClass}>{children}</div>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
