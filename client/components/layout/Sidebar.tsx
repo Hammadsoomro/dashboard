@@ -157,7 +157,7 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
                           ? "cursor-default text-neutral-400 dark:text-neutral-600"
                           : "text-neutral-600 hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white",
                         isActive &&
-                          "bg-amber-500 text-white sombra hover:bg-amber-500 dark:hover:bg-amber-500",
+                          "bg-amber-500 text-white shadow hover:bg-amber-500 dark:hover:bg-amber-500",
                       )}
                     >
                       <Icon className="h-4 w-4" />
