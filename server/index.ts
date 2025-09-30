@@ -20,5 +20,9 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Neon (serverless Postgres) routes – will return 501 until configured
+  app.get("/api/leads", listLeads);
+  app.post("/api/leads", createLead);
+
   return app;
 }
