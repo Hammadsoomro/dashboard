@@ -16,7 +16,9 @@ export default function Index() {
               Manage your workflow with confidence
             </h1>
             <p className="text-base text-neutral-600 dark:text-neutral-300">
-              Access dashboards, analytics, and collaboration tools after you sign in. Get started by creating an account or logging into your workspace.
+              Access dashboards, analytics, and collaboration tools after you
+              sign in. Get started by creating an account or logging into your
+              workspace.
             </p>
           </div>
           <div className="w-full max-w-xs space-y-4">

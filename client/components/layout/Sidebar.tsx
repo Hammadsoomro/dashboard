@@ -74,7 +74,9 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon className="h-5 w-5" />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
+                    {!collapsed && (
+                      <span className="truncate">{item.label}</span>
+                    )}
                   </Link>
                 );
               })}

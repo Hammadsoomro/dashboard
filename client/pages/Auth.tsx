@@ -49,18 +49,23 @@ export default function Auth() {
           <div className="flex flex-col justify-between rounded-2xl bg-[oklch(0.556_0.25_274.4)] px-8 py-10 text-white">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em]">
-                <span className="h-2 w-2 rounded-full bg-white/80" /> Studio Admin
+                <span className="h-2 w-2 rounded-full bg-white/80" /> Studio
+                Admin
               </div>
-              <h2 className="text-3xl font-semibold">Design. Build. Launch. Repeat.</h2>
+              <h2 className="text-3xl font-semibold">
+                Design. Build. Launch. Repeat.
+              </h2>
               <p className="text-sm text-white/80">
-                Ready to launch? Clone the repo, install dependencies, and your dashboard is live in minutes.
+                Ready to launch? Clone the repo, install dependencies, and your
+                dashboard is live in minutes.
               </p>
             </div>
             <div className="space-y-6 text-sm">
               <div>
                 <p className="font-semibold">Need help?</p>
                 <p className="text-white/80">
-                  Check out the docs or open an issue on GitHub, community support is just a click away.
+                  Check out the docs or open an issue on GitHub, community
+                  support is just a click away.
                 </p>
               </div>
               <div className="flex items-center justify-between text-xs text-white/70">
@@ -135,7 +140,9 @@ export default function Auth() {
                   <input
                     required
                     type="password"
-                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    autoComplete={
+                      mode === "login" ? "current-password" : "new-password"
+                    }
                     className="w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/20 dark:border-white/10 dark:bg-neutral-900/60 dark:text-white"
                   />
                 </div>
