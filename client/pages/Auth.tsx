@@ -1,4 +1,4 @@
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, Globe } from "lucide-react";
 
@@ -29,9 +29,11 @@ export default function Auth() {
     ? "register"
     : "login";
 
-  if (location.pathname === "/auth") {
-    navigate("/login", { replace: true });
-  }
+  useEffect(() => {
+    if (location.pathname === "/auth") {
+      navigate("/login", { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   const copy = panelCopy[mode];
 
@@ -89,8 +91,11 @@ export default function Auth() {
                   {copy.subcopy}
                 </p>
               </div>
-              <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium shadow-sm hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-white">
-                <span className="text-lg">🟢</span> Continue with Google
+              <button className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-white">
+                <span className="grid h-6 w-6 place-items-center rounded-full border border-black/10 bg-white text-xs font-semibold text-neutral-700 dark:border-white/10 dark:text-white">
+                  G
+                </span>
+                Continue with Google
               </button>
               <div className="flex items-center gap-4">
                 <div className="h-px flex-1 bg-black/10 dark:bg-white/10" />
@@ -158,7 +163,7 @@ export default function Auth() {
                 )}
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.556_0.25_274.4)] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[oklch(0.556_0.25_274.4)/25] transition hover:bg-[oklch(0.556_0.25_274.4/0.95)]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.556_0.25_274.4)] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[oklch(0.556_0.25_274.4)/25] transition hover:bg-[oklch(0.556_0.23_274.4)]"
                 >
                   {copy.submitLabel} <ArrowRight className="h-4 w-4" />
                 </button>
