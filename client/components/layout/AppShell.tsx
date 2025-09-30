@@ -16,8 +16,6 @@ export default function AppShell({
     [center],
   );
 
-  const sidebarOffset = collapsed ? 80 : 256;
-
   return (
     <div className="min-h-screen bg-[oklch(0.9789_0.0082_121.627)] dark:bg-neutral-950">
       <div className="mx-auto flex min-h-screen max-w-[1440px] gap-6 px-4 py-6">
@@ -26,7 +24,7 @@ export default function AppShell({
           onCollapseToggle={() => setCollapsed((state) => !state)}
         />
         <div className="flex flex-1 flex-col">
-          <TopNav sidebarOffset={sidebarOffset} />
+          <TopNav />
           <main className="flex-1 pt-6 pb-10">
             <div className={contentWrapperClass}>{children}</div>
           </main>
