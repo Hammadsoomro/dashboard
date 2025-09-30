@@ -5,9 +5,13 @@ import {
   Settings,
   SunMedium,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export default function TopNav() {
+interface TopNavProps {
+  sidebarOffset?: number;
+}
+
+export default function TopNav({ sidebarOffset = 256 }: TopNavProps) {
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     document.documentElement.classList.contains("dark") ? "dark" : "light",
   );
@@ -17,9 +21,17 @@ export default function TopNav() {
     else document.documentElement.classList.remove("dark");
   }, [theme]);
 
+  const offsetPadding = useMemo(() => {
+    const padding = sidebarOffset + 24; // include the grid gap between sidebar and content
+    return `clamp(1rem, ${padding}px, 100vw)`;
+  }, [sidebarOffset]);
+
   return (
-    <header className="sticky top-0 z-40">
-      <div className="flex h-16 items-center gap-3 rounded-2xl border border-black/5 bg-white/80 px-3 py-3 shadow-sm backdrop-blur transition dark:border-white/10 dark:bg-neutral-900/70">
+    <header className="sticky top-0 z-40 flex flex-col">
+      <div
+        className="ml-auto flex h-16 w-full items-center gap-3 rounded-2xl border border-black/5 bg-white/80 px-3 py-3 shadow-sm backdrop-blur transition dark:border-white/10 dark:bg-neutral-900/70"
+        style={{ paddingLeft: offsetPadding }}
+      >
         <label className="relative flex-1 max-w-lg">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
           <input
