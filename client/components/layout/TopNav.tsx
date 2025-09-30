@@ -7,10 +7,15 @@ interface TopNavProps {
   showSidebarToggle?: boolean;
 }
 
-export default function TopNav({ onToggleSidebar, showSidebarToggle = false }: TopNavProps) {
+export default function TopNav({
+  onToggleSidebar,
+  showSidebarToggle = false,
+}: TopNavProps) {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => (document.documentElement.classList.contains("dark") ? "dark" : "light"));
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    document.documentElement.classList.contains("dark") ? "dark" : "light",
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -59,8 +64,16 @@ export default function TopNav({ onToggleSidebar, showSidebarToggle = false }: T
               {l.label}
             </Link>
           ))}
-          <Link to="/auth" className="text-muted-foreground hover:text-foreground">Login</Link>
-          <Link to="/auth" className="inline-flex items-center gap-2 rounded-md bg-emerald-500 text-white px-3 py-1.5 shadow hover:bg-emerald-600">
+          <Link
+            to="/auth"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Login
+          </Link>
+          <Link
+            to="/auth"
+            className="inline-flex items-center gap-2 rounded-md bg-emerald-500 text-white px-3 py-1.5 shadow hover:bg-emerald-600"
+          >
             <UsersRound className="h-4 w-4" /> Register
           </Link>
           <button
@@ -68,7 +81,11 @@ export default function TopNav({ onToggleSidebar, showSidebarToggle = false }: T
             onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
             className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-md border border-black/5 bg-white/70 dark:bg-neutral-800/70 shadow-sm hover:bg-white/90 dark:hover:bg-neutral-800"
           >
-            {theme === "light" ? <Moon className="h-4 w-4" /> : <SunMedium className="h-4 w-4" />}
+            {theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <SunMedium className="h-4 w-4" />
+            )}
           </button>
         </nav>
       </div>

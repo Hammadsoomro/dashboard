@@ -73,9 +73,9 @@
 
     --chart-1: oklch(0.84 0.12 170);
     --chart-2: oklch(0.82 0.16 210);
-    --chart-3: oklch(0.80 0.18 80);
+    --chart-3: oklch(0.8 0.18 80);
     --chart-4: oklch(0.78 0.18 30);
-    --chart-5: oklch(0.76 0.20 0);
+    --chart-5: oklch(0.76 0.2 0);
   }
 
   .dark {

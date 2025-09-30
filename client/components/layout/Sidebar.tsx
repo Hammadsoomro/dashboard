@@ -1,5 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, MessageSquareMore, Inbox, Boxes, TrendingUp, Users2, Settings, ChevronLeft } from "lucide-react";
+import {
+  LayoutDashboard,
+  MessageSquareMore,
+  Inbox,
+  Boxes,
+  TrendingUp,
+  Users2,
+  Settings,
+  ChevronLeft,
+} from "lucide-react";
 import { useMemo } from "react";
 
 interface SidebarProps {
@@ -30,13 +39,19 @@ export default function Sidebar({ collapsed, onCollapseToggle }: SidebarProps) {
     >
       <div className="rounded-2xl border border-black/5 bg-white/80 dark:bg-neutral-900/70 backdrop-blur shadow-lg">
         <div className="p-2 flex items-center justify-between">
-          {!collapsed && <span className="px-2 py-1 text-xs font-medium text-muted-foreground">Navigation</span>}
+          {!collapsed && (
+            <span className="px-2 py-1 text-xs font-medium text-muted-foreground">
+              Navigation
+            </span>
+          )}
           <button
             onClick={onCollapseToggle}
             className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-md border border-black/5 bg-white/70 dark:bg-neutral-800/70 shadow-sm hover:bg-white/90 dark:hover:bg-neutral-800"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <ChevronLeft className={`h-4 w-4 transition-transform ${collapsed ? "rotate-180" : "rotate-0"}`} />
+            <ChevronLeft
+              className={`h-4 w-4 transition-transform ${collapsed ? "rotate-180" : "rotate-0"}`}
+            />
           </button>
         </div>
         <nav className="px-2 pb-2">

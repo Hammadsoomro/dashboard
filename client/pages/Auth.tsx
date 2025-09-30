@@ -34,19 +34,33 @@ export default function Auth() {
               )}
               <div>
                 <label className="text-sm font-medium">Email</label>
-                <input type="email" className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-neutral-900/50" />
+                <input
+                  type="email"
+                  className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-neutral-900/50"
+                />
               </div>
               <div>
                 <label className="text-sm font-medium">Password</label>
-                <input type="password" className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-neutral-900/50" />
+                <input
+                  type="password"
+                  className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-neutral-900/50"
+                />
               </div>
               {mode === "register" && (
                 <div>
-                  <label className="text-sm font-medium">Confirm password</label>
-                  <input type="password" className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-neutral-900/50" />
+                  <label className="text-sm font-medium">
+                    Confirm password
+                  </label>
+                  <input
+                    type="password"
+                    className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-neutral-900/50"
+                  />
                 </div>
               )}
-              <button type="submit" className="w-full rounded-xl bg-emerald-500 text-white py-2.5 font-medium shadow hover:bg-emerald-600">
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-emerald-500 text-white py-2.5 font-medium shadow hover:bg-emerald-600"
+              >
                 {mode === "login" ? "Login" : "Create account"}
               </button>
             </form>
