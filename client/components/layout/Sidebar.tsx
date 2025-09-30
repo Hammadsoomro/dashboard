@@ -1,22 +1,19 @@
 import {
   ChevronLeft,
   Command,
-  GraduationCap,
   LayoutDashboard,
   LineChart,
   Mail,
   MessageSquareMore,
-  ShoppingBag,
+  Settings,
   Truck,
   Users2,
-  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 type SidebarUser = {
@@ -29,8 +26,7 @@ type SidebarUser = {
 type SidebarNavItem = {
   label: string;
   icon: LucideIcon;
-  to?: string;
-  status?: "soon";
+  to: string;
 };
 
 type SidebarSection = {
@@ -59,22 +55,15 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
   const sections = useMemo<SidebarSection[]>(
     () => [
       {
-        title: "Dashboards",
+        title: "Menu",
         items: [
-          { label: "Default", icon: LayoutDashboard, to: "/dashboard" },
-          { label: "CRM", icon: Users2, to: "/team-management" },
-          { label: "Finance", icon: Wallet, to: "/sales-tracker" },
-          { label: "Analytics", icon: LineChart, status: "soon" },
-          { label: "E-commerce", icon: ShoppingBag, status: "soon" },
-          { label: "Academy", icon: GraduationCap, status: "soon" },
-          { label: "Logistics", icon: Truck, status: "soon" },
-        ],
-      },
-      {
-        title: "Pages",
-        items: [
-          { label: "Email", icon: Mail, to: "/inbox" },
-          { label: "Chat", icon: MessageSquareMore, status: "soon" },
+          { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+          { label: "Team Chat", icon: MessageSquareMore, to: "/team-chat" },
+          { label: "Inbox", icon: Mail, to: "/inbox" },
+          { label: "Distributor", icon: Truck, to: "/distributor" },
+          { label: "Sales Tracker", icon: LineChart, to: "/sales-tracker" },
+          { label: "Team Management", icon: Users2, to: "/team-management" },
+          { label: "Setting", icon: Settings, to: "/settings" },
         ],
       },
     ],
@@ -145,56 +134,25 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const Icon = item.icon;
-                  const isActive = Boolean(item.to && pathname === item.to);
-                  const isDisabled = item.status === "soon";
+                  const isActive = pathname === item.to;
                   const content = (
                     <div
-                      aria-disabled={isDisabled || undefined}
                       className={cn(
-                        "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition",
+                        "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-neutral-600 transition hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white",
                         collapsed ? "justify-center" : "",
-                        isDisabled
-                          ? "cursor-default text-neutral-400 dark:text-neutral-600"
-                          : "text-neutral-600 hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white",
                         isActive &&
                           "bg-amber-500 text-white shadow hover:bg-amber-500 dark:hover:bg-amber-500",
                       )}
                     >
                       <Icon className="h-4 w-4" />
                       {!collapsed && (
-                        <>
-                          <span className="flex-1 truncate font-medium">{item.label}</span>
-                          {item.status === "soon" && (
-                            <Badge
-                              variant="secondary"
-                              className="ml-auto bg-neutral-200 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300"
-                            >
-                              Soon
-                            </Badge>
-                          )}
-                        </>
+                        <span className="flex-1 truncate font-medium">{item.label}</span>
                       )}
                     </div>
                   );
 
-                  if (!item.to || isDisabled) {
-                    return (
-                      <div
-                        key={item.label}
-                        className="pointer-events-none"
-                        title={collapsed ? item.label : undefined}
-                      >
-                        {content}
-                      </div>
-                    );
-                  }
-
                   return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      title={collapsed ? item.label : undefined}
-                    >
+                    <Link key={item.to} to={item.to} title={collapsed ? item.label : undefined}>
                       {content}
                     </Link>
                   );
