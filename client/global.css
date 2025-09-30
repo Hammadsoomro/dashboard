@@ -57,6 +57,25 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Dashboard custom tokens (used directly, not through Tailwind hsl()) */
+    --color-newLeads: oklch(0.5106 0.2301 276.966);
+    --color-disqualified: oklch(0.6368 0.2078 25.3313);
+    --color-proposalsSent: oklch(0.723 0.219 149.579);
+    --color-revenue: oklch(0.723 0.219 149.579);
+    --color-website: oklch(0.5106 0.2301 276.966);
+    --color-referral: oklch(0.7038 0.123 182.503);
+    --color-social: oklch(0.7686 0.1647 70.0804);
+    --color-cold: oklch(0.6559 0.2118 354.308);
+    --color-other: oklch(0.7227 0.192 149.579);
+    --color-actual: oklch(0.723 0.219 149.579 / 0.15);
+    --color-remaining: oklch(0.6559 0.2118 354.308 / 0.25);
+
+    --chart-1: oklch(0.84 0.12 170);
+    --chart-2: oklch(0.82 0.16 210);
+    --chart-3: oklch(0.80 0.18 80);
+    --chart-4: oklch(0.78 0.18 30);
+    --chart-5: oklch(0.76 0.20 0);
   }
 
   .dark {
