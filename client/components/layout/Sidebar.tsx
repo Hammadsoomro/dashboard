@@ -40,7 +40,11 @@ type SidebarProps = {
   user: SidebarUser;
 };
 
-export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarProps) {
+export default function Sidebar({
+  collapsed,
+  onCollapseToggle,
+  user,
+}: SidebarProps) {
   const { pathname } = useLocation();
 
   const initials = useMemo(() => {
@@ -146,13 +150,19 @@ export default function Sidebar({ collapsed, onCollapseToggle, user }: SidebarPr
                     >
                       <Icon className="h-4 w-4" />
                       {!collapsed && (
-                        <span className="flex-1 truncate font-medium">{item.label}</span>
+                        <span className="flex-1 truncate font-medium">
+                          {item.label}
+                        </span>
                       )}
                     </div>
                   );
 
                   return (
-                    <Link key={item.to} to={item.to} title={collapsed ? item.label : undefined}>
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      title={collapsed ? item.label : undefined}
+                    >
                       {content}
                     </Link>
                   );
