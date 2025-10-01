@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getCollection } from "@/lib/mongo";
+import { getCollection } from "../lib/mongo";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
