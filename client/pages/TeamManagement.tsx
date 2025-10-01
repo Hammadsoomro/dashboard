@@ -29,7 +29,13 @@ export default function TeamManagement() {
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        alert(body?.message || 'Failed to create user');
+        if (res.status === 401) {
+          alert('Not authenticated. Please login and try again.');
+        } else if (res.status === 403) {
+          alert('Forbidden. You must be an admin to create team members.');
+        } else {
+          alert(body?.message || 'Failed to create user');
+        }
         setBusy(false);
         return;
       }
