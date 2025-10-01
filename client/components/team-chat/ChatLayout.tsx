@@ -162,6 +162,63 @@ export function ChatLayout() {
     [activeConversationId],
   );
 
+  const handleIncomingMessage = useCallback(
+    (
+      conversationId: string,
+      messageContent: string,
+      notificationDetails?: IncomingNotificationPayload,
+    ) => {
+      const sentAt = new Date().toISOString();
+      const messageId = `msg-${generateMessageId()}`;
+      let targetMemberId: string | undefined;
+
+      setConversations((current) =>
+        current.map((conversation) => {
+          if (conversation.id !== conversationId) {
+            return conversation;
+          }
+
+          targetMemberId = conversation.memberId;
+          const isActive = conversationId === activeConversationId;
+
+          return {
+            ...conversation,
+            unreadCount: isActive ? 0 : conversation.unreadCount + 1,
+            lastMessagePreview: messageContent,
+            lastMessageAt: sentAt,
+            messages: [
+              ...conversation.messages,
+              {
+                id: messageId,
+                authorId: conversation.memberId,
+                content: messageContent,
+                sentAt,
+                status: isActive ? ("read" as const) : ("delivered" as const),
+              },
+            ],
+          };
+        }),
+      );
+
+      if (notificationDetails && targetMemberId) {
+        const fullNotification: ChatNotification = {
+          id: `notif-${generateMessageId()}`,
+          createdAt: sentAt,
+          memberId: targetMemberId,
+          ...notificationDetails,
+        };
+
+        setNotifications((current) => [fullNotification, ...current]);
+        toast(fullNotification.title, {
+          description: fullNotification.description,
+        });
+      }
+
+      playNotificationSound();
+    },
+    [activeConversationId, playNotificationSound],
+  );
+
   const sortedConversations = useMemo(
     () =>
       [...conversations].sort((a, b) => {
