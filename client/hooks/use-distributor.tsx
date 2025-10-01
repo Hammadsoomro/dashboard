@@ -11,6 +11,7 @@ export interface DistributionLine {
   id: string;
   text: string;
   preview: string;
+  wordCount: number;
 }
 
 export interface DistributionAssignment {
