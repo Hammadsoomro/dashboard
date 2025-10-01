@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getCollection } from "@/lib/mongo";
+import { getCollection } from "../lib/mongo";
 
 export const listDistributions: RequestHandler = async (req, res) => {
   try {
