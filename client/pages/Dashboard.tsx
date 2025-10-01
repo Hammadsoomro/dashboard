@@ -130,7 +130,7 @@ export default function Dashboard() {
           </section>
 
           {/* Proposals Sent */}
-        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6 overflow-hidden">
+          <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6 overflow-hidden">
           <header className="px-6 pt-5">
             <div className="grid gap-1">
               <div className="text-sm font-semibold">Proposals Sent</div>
