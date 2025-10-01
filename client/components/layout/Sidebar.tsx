@@ -118,24 +118,29 @@ export default function Sidebar({
           </button>
         </div>
 
-        <Link
-          to="/dashboard"
-          className={cn(
-            "group mb-6 flex items-center gap-3 rounded-2xl bg-[oklch(0.627_0.228_85.852)] px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:brightness-110",
-            collapsed && "justify-center px-3",
+        <div className={cn("mb-6 flex w-full items-center rounded-2xl px-4 py-3 transition", collapsed ? "justify-center" : "bg-gradient-to-r from-emerald-400 via-sky-400 to-indigo-500 text-white")}>
+          {!collapsed ? (
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-white/20 p-2 text-white">
+                  <Command className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">Live time</span>
+                  <span className="text-xs opacity-90">{dateString}</span>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-mono font-semibold">{timeString}</div>
+                <div className="text-xs opacity-80">Local time</div>
+              </div>
+            </div>
+          ) : (
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 via-sky-400 to-indigo-500 text-white">
+              <div className="text-xs font-mono">{now.getHours().toString().padStart(2,'0')}:{now.getMinutes().toString().padStart(2,'0')}</div>
+            </div>
           )}
-          aria-label="Quick Create"
-        >
-          <div className="flex items-center gap-2">
-            <Command className="h-4 w-4" />
-            {!collapsed && <span>Quick Create</span>}
-          </div>
-          {!collapsed && (
-            <span className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
-              <Mail className="h-4 w-4" />
-            </span>
-          )}
-        </Link>
+        </div>
 
         <nav className="flex-1 space-y-6 overflow-y-auto pb-4 pr-1">
           {sections.map((section) => (
