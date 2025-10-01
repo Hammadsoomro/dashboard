@@ -12,6 +12,14 @@ function cloneConversations() {
   }));
 }
 
+function generateMessageId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 const initialConversations = cloneConversations();
 
 const initialConversationId = initialConversations
@@ -59,6 +67,7 @@ export function ChatLayout() {
   const handleSendMessage = useCallback(
     (content: string) => {
       const now = new Date().toISOString();
+      const id = `msg-${generateMessageId()}`;
 
       setConversations((current) =>
         current.map((conversation) => {
@@ -74,7 +83,7 @@ export function ChatLayout() {
             messages: [
               ...conversation.messages,
               {
-                id: `msg-${crypto.randomUUID()}`,
+                id,
                 authorId: "current-user",
                 content,
                 sentAt: now,
