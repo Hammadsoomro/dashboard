@@ -317,11 +317,19 @@ export function ChatLayout() {
         activeConversationId={activeConversationId}
         onSelectConversation={handleSelectConversation}
       />
-      <ChatConversation
-        member={activeMember}
-        conversation={activeConversation}
-        onSendMessage={handleSendMessage}
-      />
+      <div className="relative flex flex-1">
+        <ChatConversation
+          member={activeMember}
+          conversation={activeConversation}
+          onSendMessage={handleSendMessage}
+        />
+        <NotificationTray
+          notifications={notifications.slice(0, 3)}
+          members={members}
+          onOpenConversation={handleNotificationOpen}
+          onDismiss={handleDismissNotification}
+        />
+      </div>
     </div>
   );
 }
