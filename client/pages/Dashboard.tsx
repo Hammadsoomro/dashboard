@@ -221,7 +221,7 @@ export default function Dashboard() {
               -2.5%
             </span>
           </div>
-        </section>
+          </section>
 
         </div>
 
