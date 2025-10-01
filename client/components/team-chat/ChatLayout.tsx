@@ -173,6 +173,72 @@ export function ChatLayout() {
     };
   }, []);
 
+  // Poll for new conversations/messages to show notifications and update unread counts
+  useEffect(() => {
+    let mounted = true;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/chat/conversations');
+        if (!res.ok) return;
+        const convs = await res.json();
+        if (!mounted) return;
+
+        setConversations((current) => {
+          const next = [...current];
+          for (const conv of convs || []) {
+            const convId = getId(conv) ?? conv.id;
+            const existing = next.find((c) => c.id === convId);
+            if (!existing) {
+              // New conversation - fetch messages
+              (async () => {
+                const messagesRes = await fetch(`/api/chat/${convId}/messages`);
+                const msgs = messagesRes.ok ? await messagesRes.json() : [];
+                const mappedMessages: Message[] = (msgs || []).map((m: any) => ({ id: getId(m) ?? m.id, authorId: m.authorId, content: m.content, sentAt: m.sentAt, status: m.status ?? 'delivered' }));
+                setConversations((cur) => {
+                  const merged = [...cur, {
+                    id: convId,
+                    memberId: conv.memberId ?? (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined),
+                    unreadCount: conv.unreadCount ?? 0,
+                    pinned: conv.pinned ?? false,
+                    lastMessagePreview: conv.lastMessagePreview ?? (mappedMessages[mappedMessages.length - 1]?.content ?? ''),
+                    lastMessageAt: conv.lastMessageAt ?? (mappedMessages[mappedMessages.length - 1]?.sentAt ?? new Date().toISOString()),
+                    messages: mappedMessages,
+                  }];
+                  return merged.sort((a,b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+                });
+              })();
+              continue;
+            }
+
+            const newLast = conv.lastMessageAt ?? existing.lastMessageAt;
+            if (new Date(newLast).getTime() > new Date(existing.lastMessageAt).getTime()) {
+              // New message arrived
+              existing.lastMessageAt = conv.lastMessageAt ?? existing.lastMessageAt;
+              existing.lastMessagePreview = conv.lastMessagePreview ?? existing.lastMessagePreview;
+              existing.unreadCount = (existing.unreadCount || 0) + 1;
+
+              // create notification
+              const noteId = `note-${generateMessageId()}`;
+              setNotifications((n) => [
+                { id: noteId, type: 'message', memberId: existing.memberId, title: 'New message', description: existing.lastMessagePreview, createdAt: new Date().toISOString() },
+                ...n,
+              ].slice(0, 10));
+
+              // play sound
+              playNotificationSound();
+            }
+          }
+
+          return next.sort((a,b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+        });
+      } catch (e) {
+        console.error('Polling chat failed', e);
+      }
+    }, 5000);
+
+    return () => { mounted = false; clearInterval(interval); };
+  }, [playNotificationSound]);
+
   const activeConversation = useMemo(
     () => conversations.find((c) => c.id === activeConversationId),
     [conversations, activeConversationId],
