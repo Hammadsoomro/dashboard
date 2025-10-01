@@ -326,7 +326,7 @@ export function ChatLayout() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-6 lg:h-[calc(100vh-10rem)]">
+    <div className="flex flex-1 min-h-0 gap-6">
       <ChatSidebar
         members={members}
         conversations={sortedConversations}

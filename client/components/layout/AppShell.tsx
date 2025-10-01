@@ -33,7 +33,7 @@ export default function AppShell({ children, center = false }: AppShellProps) {
         <div className="flex flex-1 flex-col overflow-hidden">
           <TopNav />
           <main className="flex-1 overflow-y-auto py-6">
-            <div className={contentWrapperClass}>{children}</div>
+            <div className={`${contentWrapperClass} h-full`}>{children}</div>
           </main>
         </div>
       </div>
