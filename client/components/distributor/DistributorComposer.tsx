@@ -307,7 +307,6 @@ function DistributionPreview({ lines }: { lines: DistributionLine[] }) {
                   </div>
                   <p className="mt-2 font-medium text-foreground" title={line.text}>
                     {line.preview}
-                    {line.preview.length < line.text.length ? "…" : ""}
                   </p>
                 </li>
               ))}
