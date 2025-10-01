@@ -184,6 +184,7 @@ export default function Auth() {
                     Password
                   </label>
                   <input
+                    name="password"
                     required
                     type="password"
                     autoComplete={
