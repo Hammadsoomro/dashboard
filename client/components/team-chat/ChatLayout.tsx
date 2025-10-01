@@ -82,71 +82,85 @@ export function ChatLayout() {
   }, []);
 
   const fetchInitialData = useCallback(async () => {
-    try {
-      const [teamRes, convRes] = await Promise.all([
-        fetch('/api/team'),
-        fetch('/api/chat/conversations'),
-      ]);
+    const maxRetries = 3;
+    let attempt = 0;
 
-      if (!teamRes.ok || !convRes.ok) {
-        console.error('Failed to fetch initial chat data');
+    while (attempt < maxRetries) {
+      attempt += 1;
+      try {
+        const [teamRes, convRes] = await Promise.all([
+          fetch('/api/team'),
+          fetch('/api/chat/conversations'),
+        ]);
+
+        if (!teamRes.ok || !convRes.ok) {
+          const teamText = await teamRes.text().catch(() => "<no-body>");
+          const convText = await convRes.text().catch(() => "<no-body>");
+          console.error(`Failed to fetch initial chat data (attempt ${attempt}): teamRes=${teamRes.status}, convRes=${convRes.status}`, { teamText, convText });
+          // wait before retrying
+          await new Promise((r) => setTimeout(r, 500 * attempt));
+          continue;
+        }
+
+        const team = await teamRes.json();
+        const convs = await convRes.json();
+
+        setMembers(
+          (team || []).map((u: any) => ({
+            id: getId(u) ?? u.email,
+            name: u.name,
+            role: u.role ?? 'member',
+            status: u.status ?? 'online',
+            location: u.location ?? '',
+            avatarUrl: u.avatarUrl ?? undefined,
+          })),
+        );
+
+        // Load messages for each conversation
+        const convsWithMessages: Conversation[] = [];
+
+        for (const conv of convs || []) {
+          const convId = getId(conv) ?? conv.id;
+          const messagesRes = await fetch(`/api/chat/${convId}/messages`);
+          const msgs = messagesRes.ok ? await messagesRes.json() : [];
+
+          const mappedMessages: Message[] = (msgs || []).map((m: any) => ({
+            id: getId(m) ?? m.id,
+            authorId: m.authorId,
+            content: m.content,
+            sentAt: m.sentAt,
+            status: m.status ?? 'delivered',
+          }));
+
+          // Determine memberId for UI (for 1:1 chats use first member id)
+          const memberId = conv.memberId ?? (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined);
+
+          convsWithMessages.push({
+            id: convId,
+            memberId: memberId,
+            unreadCount: conv.unreadCount ?? 0,
+            pinned: conv.pinned ?? false,
+            lastMessagePreview: conv.lastMessagePreview ?? (mappedMessages[mappedMessages.length - 1]?.content ?? ''),
+            lastMessageAt: conv.lastMessageAt ?? (mappedMessages[mappedMessages.length - 1]?.sentAt ?? new Date().toISOString()),
+            messages: mappedMessages,
+          });
+        }
+
+        // Sort and set
+        convsWithMessages.sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+        setConversations(convsWithMessages);
+
+        // set initial active conversation
+        const firstId = convsWithMessages[0]?.id ?? '';
+        setActiveConversationId(firstId);
         return;
+      } catch (e) {
+        console.error(`Error fetching chat data (attempt ${attempt})`, e);
+        await new Promise((r) => setTimeout(r, 500 * attempt));
       }
-
-      const team = await teamRes.json();
-      const convs = await convRes.json();
-
-      setMembers(
-        (team || []).map((u: any) => ({
-          id: getId(u) ?? u.email,
-          name: u.name,
-          role: u.role ?? 'member',
-          status: u.status ?? 'online',
-          location: u.location ?? '',
-          avatarUrl: u.avatarUrl ?? undefined,
-        })),
-      );
-
-      // Load messages for each conversation
-      const convsWithMessages: Conversation[] = [];
-
-      for (const conv of convs || []) {
-        const convId = getId(conv) ?? conv.id;
-        const messagesRes = await fetch(`/api/chat/${convId}/messages`);
-        const msgs = messagesRes.ok ? await messagesRes.json() : [];
-
-        const mappedMessages: Message[] = (msgs || []).map((m: any) => ({
-          id: getId(m) ?? m.id,
-          authorId: m.authorId,
-          content: m.content,
-          sentAt: m.sentAt,
-          status: m.status ?? 'delivered',
-        }));
-
-        // Determine memberId for UI (for 1:1 chats use first member id)
-        const memberId = conv.memberId ?? (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined);
-
-        convsWithMessages.push({
-          id: convId,
-          memberId: memberId,
-          unreadCount: conv.unreadCount ?? 0,
-          pinned: conv.pinned ?? false,
-          lastMessagePreview: conv.lastMessagePreview ?? (mappedMessages[mappedMessages.length - 1]?.content ?? ''),
-          lastMessageAt: conv.lastMessageAt ?? (mappedMessages[mappedMessages.length - 1]?.sentAt ?? new Date().toISOString()),
-          messages: mappedMessages,
-        });
-      }
-
-      // Sort and set
-      convsWithMessages.sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
-      setConversations(convsWithMessages);
-
-      // set initial active conversation
-      const firstId = convsWithMessages[0]?.id ?? '';
-      setActiveConversationId(firstId);
-    } catch (e) {
-      console.error('Error fetching chat data', e);
     }
+
+    console.error('Failed to fetch initial chat data after retries');
   }, []);
 
   useEffect(() => {
