@@ -20,9 +20,36 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
-  // Neon (serverless Postgres) routes – will return 501 until configured
+  // Leads (Mongo)
   app.get("/api/leads", listLeads);
   app.post("/api/leads", createLead);
+
+  // Auth
+  import("./routes/auth").then(({ register, login }) => {
+    app.post("/api/auth/register", register);
+    app.post("/api/auth/login", login);
+  });
+
+  // Team members
+  import("./routes/team").then(({ listTeam, createMember, getMember }) => {
+    app.get("/api/team", listTeam);
+    app.post("/api/team", createMember);
+    app.get("/api/team/:id", getMember);
+  });
+
+  // Chat
+  import("./routes/chat").then(({ listConversations, getMessages, postMessage, createConversation }) => {
+    app.get("/api/chat/conversations", listConversations);
+    app.get("/api/chat/:conversationId/messages", getMessages);
+    app.post("/api/chat/:conversationId/messages", postMessage);
+    app.post("/api/chat/conversations", createConversation);
+  });
+
+  // Distribution
+  import("./routes/distribution").then(({ listDistributions, createDistribution }) => {
+    app.get("/api/distributions", listDistributions);
+    app.post("/api/distributions", createDistribution);
+  });
 
   return app;
 }
