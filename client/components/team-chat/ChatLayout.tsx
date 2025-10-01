@@ -219,6 +219,82 @@ export function ChatLayout() {
     [activeConversationId, playNotificationSound],
   );
 
+  useEffect(() => {
+    return () => {
+      audioContextRef.current?.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (hasSimulatedMessageRef.current) {
+      return;
+    }
+
+    hasSimulatedMessageRef.current = true;
+    const timer = window.setTimeout(() => {
+      handleIncomingMessage(
+        "conv-brian-carter",
+        "Heads up! The AI brief is ready for your review.",
+        {
+          title: "Brian pinged you with an update",
+          description: "“Heads up! The AI brief is ready for your review.”",
+          type: "mention",
+        },
+      );
+    }, 5200);
+
+    return () => window.clearTimeout(timer);
+  }, [handleIncomingMessage]);
+
+  const handleDismissNotification = useCallback((notificationId: string) => {
+    setNotifications((current) => current.filter((item) => item.id !== notificationId));
+  }, []);
+
+  const handleNotificationOpen = useCallback(
+    (notificationId: string, memberId: string | undefined) => {
+      setNotifications((current) => current.filter((item) => item.id !== notificationId));
+
+      if (!memberId) {
+        return;
+      }
+
+      let targetConversationId: string | undefined;
+      setConversations((current) =>
+        current.map((conversation) => {
+          if (conversation.memberId !== memberId) {
+            return conversation;
+          }
+
+          targetConversationId = conversation.id;
+          return {
+            ...conversation,
+            unreadCount: 0,
+            messages: conversation.messages.map((message, index, array) => {
+              if (
+                index === array.length - 1 &&
+                message.authorId === conversation.memberId &&
+                message.status !== "read"
+              ) {
+                return { ...message, status: "read" as const };
+              }
+
+              return message;
+            }),
+          };
+        }),
+      );
+
+      if (targetConversationId) {
+        setActiveConversationId(targetConversationId);
+      }
+    },
+    [],
+  );
+
   const sortedConversations = useMemo(
     () =>
       [...conversations].sort((a, b) => {
