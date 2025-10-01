@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import { teamChatData } from "@/data/team-chat";
 import { useDistributor } from "@/hooks/use-distributor";
+import { useTeam } from "@/hooks/use-team";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
