@@ -22,8 +22,8 @@ function generateMessageId() {
 
 const initialConversations = cloneConversations();
 
-const initialConversationId = initialConversations
-  .toSorted((a, b) => {
+const initialConversationId = [...initialConversations]
+  .sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
     return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
@@ -99,7 +99,7 @@ export function ChatLayout() {
 
   const sortedConversations = useMemo(
     () =>
-      conversations.toSorted((a, b) => {
+      [...conversations].sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
         return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
