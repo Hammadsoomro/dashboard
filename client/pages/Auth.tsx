@@ -172,6 +172,7 @@ export default function Auth() {
                     Email address
                   </label>
                   <input
+                    name="email"
                     required
                     type="email"
                     autoComplete="email"
