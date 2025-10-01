@@ -154,9 +154,9 @@ export default function Dashboard() {
               </svg>
             </div>
           </div>
-        </section>
+          </section>
 
-        {/* Revenue */}
+          {/* Revenue */}
         <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
           <div className="px-6 pt-5">
             <div className="inline-flex items-center gap-2 rounded-lg bg-[color:oklab(0.723_-0.18885_0.110891_/0.1)] px-2 py-1 text-[oklch(0.723_0.219_149.579)]">
