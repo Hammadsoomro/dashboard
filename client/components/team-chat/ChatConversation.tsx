@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Paperclip, Smile, Send, Phone, Video, MoreVertical } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import type { Conversation, Message, TeamMember } from "@/data/team-chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
