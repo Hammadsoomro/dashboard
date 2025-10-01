@@ -26,6 +26,8 @@ function generateMessageId() {
 
 const initialConversations = cloneConversations();
 
+type IncomingNotificationPayload = Omit<ChatNotification, "id" | "createdAt">;
+
 const initialConversationId = [...initialConversations]
   .sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
