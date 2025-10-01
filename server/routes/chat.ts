@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getCollection } from "@/lib/mongo";
+import { getCollection } from "../lib/mongo";
 import { ObjectId } from "mongodb";
 
 export const listConversations: RequestHandler = async (req, res) => {
