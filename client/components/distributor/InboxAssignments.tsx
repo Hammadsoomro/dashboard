@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
-import { teamChatData, type TeamMember } from "@/data/team-chat";
+import type { TeamMember } from "@/data/team-chat";
+import { useTeam } from "@/hooks/use-team";
 import {
   type DistributionAssignment,
   type DistributionRecord,
