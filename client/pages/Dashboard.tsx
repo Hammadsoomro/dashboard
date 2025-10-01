@@ -191,7 +191,7 @@ export default function Dashboard() {
           </section>
 
           {/* Projects Won */}
-        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
+          <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
           <div className="px-6 pt-5">
             <div className="inline-flex items-center gap-2 rounded-lg bg-[color:oklab(0.6368_0.18782_0.0889076_/0.1)] px-2 py-1 text-[oklch(0.6368_0.2078_25.3313)]">
               <svg
