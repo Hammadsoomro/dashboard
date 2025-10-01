@@ -10,7 +10,7 @@ import {
   Users2,
   type LucideIcon,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
