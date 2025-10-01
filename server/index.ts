@@ -5,7 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { createLead, listLeads } from "./routes/mongo";
 import { register, login, me } from "./routes/auth";
 import { requireAuth } from "./middleware/auth";
-import { listTeam, createMember, getMember } from "./routes/team";
+import { listTeam, createMember, getMember, deleteMember } from "./routes/team";
 import { listConversations, getMessages, postMessage, createConversation } from "./routes/chat";
 import { listDistributions, createDistribution } from "./routes/distribution";
 
