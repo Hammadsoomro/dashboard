@@ -81,3 +81,32 @@ export const login: RequestHandler = async (req, res) => {
     res.status(500).json({ message: "Unexpected error" });
   }
 };
+
+import { ObjectId } from "mongodb";
+import { Request } from "express";
+
+export const me: RequestHandler = async (req: Request & { userId?: string }, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ message: "Not authenticated" });
+      return;
+    }
+    const users = await getCollection("users");
+    let query: any;
+    try {
+      query = { _id: new ObjectId(userId) };
+    } catch (e) {
+      query = { _id: userId };
+    }
+    const user = await users.findOne(query, { projection: { passwordHash: 0 } });
+    if (!user) {
+      res.status(404).json({ message: "Not found" });
+      return;
+    }
+    res.json(user);
+  } catch (e: any) {
+    console.error(e);
+    res.status(500).json({ message: "Unexpected error" });
+  }
+};
