@@ -1,9 +1,13 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { teamChatData } from "@/data/team-chat";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+
+import { teamChatData, type ChatNotification } from "@/data/team-chat";
 
 import { ChatSidebar } from "./ChatSidebar";
 import { ChatConversation } from "./ChatConversation";
+import { NotificationTray } from "./NotificationTray";
 
 function cloneConversations() {
   return teamChatData.conversations.map((conversation) => ({
