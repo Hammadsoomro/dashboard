@@ -1,5 +1,21 @@
 import { RequestHandler } from "express";
 import { getCollection } from "../lib/mongo";
+import bcrypt from "bcryptjs";
+import { ObjectId } from "mongodb";
+
+// Helper to check if requesting user is admin
+async function isRequestingUserAdmin(req: any) {
+  const userId = req.userId;
+  if (!userId) return false;
+  const users = await getCollection("users");
+  try {
+    const owner = await users.findOne({ _id: new ObjectId(userId) });
+    return !!owner && (owner.role === "admin" || owner.role === "Admin");
+  } catch (e) {
+    const owner = await users.findOne({ _id: userId });
+    return !!owner && (owner.role === "admin" || owner.role === "Admin");
+  }
+}
 
 export const listTeam: RequestHandler = async (req, res) => {
   try {
@@ -19,13 +35,18 @@ export const getMember: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const users = await getCollection("users");
-    const user = await users.findOne({ _id: id });
+    let query: any;
+    try {
+      query = { _id: new ObjectId(id) };
+    } catch {
+      query = { _id: id };
+    }
+    const user = await users.findOne(query, { projection: { passwordHash: 0 } });
     if (!user) {
       res.status(404).json({ message: "Not found" });
       return;
     }
-    const { passwordHash, ...rest } = user as any;
-    res.json(rest);
+    res.json(user);
   } catch (e: any) {
     console.error(e);
     res.status(500).json({ message: "Unexpected error" });
@@ -34,9 +55,15 @@ export const getMember: RequestHandler = async (req, res) => {
 
 export const createMember: RequestHandler = async (req, res) => {
   try {
-    const { name, email, role = "member", avatarUrl, location, status = "online" } = req.body ?? {};
-    if (!email || !name) {
-      res.status(400).json({ message: "name and email required" });
+    // Only admins can create members
+    if (!(await isRequestingUserAdmin(req))) {
+      res.status(403).json({ message: "Forbidden" });
+      return;
+    }
+
+    const { name, email, role = "member", avatarUrl, location, status = "online", password } = req.body ?? {};
+    if (!email || !name || !password) {
+      res.status(400).json({ message: "name, email and password required" });
       return;
     }
 
@@ -47,11 +74,34 @@ export const createMember: RequestHandler = async (req, res) => {
       return;
     }
 
+    const passwordHash = await bcrypt.hash(password, 10);
     const now = new Date().toISOString();
-    const result = await users.insertOne({ name, email, role, avatarUrl: avatarUrl ?? null, location: location ?? null, status, createdAt: now });
+    const result = await users.insertOne({ name, email, role, avatarUrl: avatarUrl ?? null, location: location ?? null, status, passwordHash, createdAt: now });
     const user = await users.findOne({ _id: result.insertedId });
-    const { passwordHash, ...rest } = user as any;
+    const { passwordHash: _ph, ...rest } = user as any;
     res.json(rest);
+  } catch (e: any) {
+    console.error(e);
+    res.status(500).json({ message: "Unexpected error" });
+  }
+};
+
+export const deleteMember: RequestHandler = async (req, res) => {
+  try {
+    if (!(await isRequestingUserAdmin(req))) {
+      res.status(403).json({ message: "Forbidden" });
+      return;
+    }
+    const { id } = req.params;
+    const users = await getCollection("users");
+    let query: any;
+    try {
+      query = { _id: new ObjectId(id) };
+    } catch {
+      query = { _id: id };
+    }
+    await users.deleteOne(query);
+    res.json({ success: true });
   } catch (e: any) {
     console.error(e);
     res.status(500).json({ message: "Unexpected error" });
