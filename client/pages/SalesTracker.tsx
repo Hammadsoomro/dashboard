@@ -154,6 +154,7 @@ export default function SalesTracker() {
                           <div className="text-lg font-semibold mt-2 drop-shadow">{m.name}</div>
                         </div>
                         <div className="text-right">
+                          <div className="text-xs font-bold">VISA</div>
                           <div className="text-xs opacity-90 uppercase tracking-wide">{s.tier}</div>
                           <div className="text-sm font-mono mt-2">1234 5678 1234 5678</div>
                         </div>
