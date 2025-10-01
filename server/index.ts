@@ -3,6 +3,10 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { createLead, listLeads } from "./routes/mongo";
+import { register, login } from "./routes/auth";
+import { listTeam, createMember, getMember } from "./routes/team";
+import { listConversations, getMessages, postMessage, createConversation } from "./routes/chat";
+import { listDistributions, createDistribution } from "./routes/distribution";
 
 export function createServer() {
   const app = express();
