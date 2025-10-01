@@ -60,5 +60,10 @@ export function createServer() {
   app.get("/api/distributions", listDistributions);
   app.post("/api/distributions", createDistribution);
 
+  // Sales
+  app.get('/api/sales', listSales);
+  app.get('/api/sales/:userId', getSalesForUser);
+  app.post('/api/sales/:userId', requireAuth, upsertSales);
+
   return app;
 }
