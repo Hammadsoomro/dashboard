@@ -183,6 +183,16 @@ export function ChatLayout() {
     return members.find((m) => m.id === activeConversation.memberId);
   }, [activeConversation, members]);
 
+  const sortedConversations = useMemo(
+    () =>
+      [...conversations].sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+      }),
+    [conversations],
+  );
+
   const handleSelectConversation = useCallback((conversationId: string) => {
     setActiveConversationId(conversationId);
 
@@ -248,16 +258,6 @@ export function ChatLayout() {
   if (!activeConversation || !activeMember) {
     return null;
   }
-
-  const sortedConversations = useMemo(
-    () =>
-      [...conversations].sort((a, b) => {
-        if (a.pinned && !b.pinned) return -1;
-        if (!a.pinned && b.pinned) return 1;
-        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
-      }),
-    [conversations],
-  );
 
   return (
     <div className="flex flex-1 min-h-0 gap-6">
