@@ -160,6 +160,7 @@ export default function Auth() {
                       Full name
                     </label>
                     <input
+                      name="name"
                       required
                       type="text"
                       className="w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/20 dark:border-white/10 dark:bg-neutral-900/60 dark:text-white"
