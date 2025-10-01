@@ -36,12 +36,13 @@ export function DistributorComposer() {
   const { toast } = useToast();
 
   const [inputValue, setInputValue] = useState("");
+  const { members } = useTeam();
   const onlineMembers = useMemo(
-    () => teamChatData.members.filter((member) => member.status === "online"),
-    [],
+    () => members.filter((member) => member.status === "online"),
+    [members],
   );
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(
-    onlineMembers.map((member) => member.id),
+    () => onlineMembers.map((member) => member.id),
   );
   const [linesPerMember, setLinesPerMember] = useState<number>(
     LINES_PER_MEMBER_OPTIONS[1],
