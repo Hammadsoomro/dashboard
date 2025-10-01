@@ -28,12 +28,13 @@ const initialConversations = cloneConversations();
 
 type IncomingNotificationPayload = Omit<ChatNotification, "id" | "createdAt">;
 
-const initialConversationId = [...initialConversations]
-  .sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
-  })[0]?.id;
+const initialConversationId = [...initialConversations].sort((a, b) => {
+  if (a.pinned && !b.pinned) return -1;
+  if (!a.pinned && b.pinned) return 1;
+  return (
+    new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+  );
+})[0]?.id;
 
 export function ChatLayout() {
   const [activeConversationId, setActiveConversationId] = useState(
@@ -54,13 +55,18 @@ export function ChatLayout() {
     }
 
     const AudioContextConstructor =
-      window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
 
     if (!AudioContextConstructor) {
       return;
     }
 
-    if (!audioContextRef.current || audioContextRef.current.state === "closed") {
+    if (
+      !audioContextRef.current ||
+      audioContextRef.current.state === "closed"
+    ) {
       audioContextRef.current = new AudioContextConstructor();
     }
 
@@ -88,7 +94,10 @@ export function ChatLayout() {
   }, []);
 
   const activeConversation = useMemo(
-    () => conversations.find((conversation) => conversation.id === activeConversationId),
+    () =>
+      conversations.find(
+        (conversation) => conversation.id === activeConversationId,
+      ),
     [conversations, activeConversationId],
   );
 
@@ -108,17 +117,19 @@ export function ChatLayout() {
           return conversation;
         }
 
-        const updatedMessages = conversation.messages.map((message, index, array) => {
-          if (
-            index === array.length - 1 &&
-            message.authorId === conversation.memberId &&
-            message.status !== "read"
-          ) {
-            return { ...message, status: "read" as const };
-          }
+        const updatedMessages = conversation.messages.map(
+          (message, index, array) => {
+            if (
+              index === array.length - 1 &&
+              message.authorId === conversation.memberId &&
+              message.status !== "read"
+            ) {
+              return { ...message, status: "read" as const };
+            }
 
-          return message;
-        });
+            return message;
+          },
+        );
 
         return {
           ...conversation,
@@ -251,12 +262,16 @@ export function ChatLayout() {
   }, [handleIncomingMessage]);
 
   const handleDismissNotification = useCallback((notificationId: string) => {
-    setNotifications((current) => current.filter((item) => item.id !== notificationId));
+    setNotifications((current) =>
+      current.filter((item) => item.id !== notificationId),
+    );
   }, []);
 
   const handleNotificationOpen = useCallback(
     (notificationId: string, memberId: string | undefined) => {
-      setNotifications((current) => current.filter((item) => item.id !== notificationId));
+      setNotifications((current) =>
+        current.filter((item) => item.id !== notificationId),
+      );
 
       if (!memberId) {
         return;
@@ -300,7 +315,10 @@ export function ChatLayout() {
       [...conversations].sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
-        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+        return (
+          new Date(b.lastMessageAt).getTime() -
+          new Date(a.lastMessageAt).getTime()
+        );
       }),
     [conversations],
   );

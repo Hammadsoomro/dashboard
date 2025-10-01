@@ -179,7 +179,8 @@ export const teamChatData: TeamChatData = {
       id: "conv-clara-mills",
       memberId: "clara-mills",
       unreadCount: 1,
-      lastMessagePreview: "OMG, you won't believe what just happened—sharing in the retro!",
+      lastMessagePreview:
+        "OMG, you won't believe what just happened—sharing in the retro!",
       lastMessageAt: "2024-09-15T09:30:12Z",
       messages: [
         {
@@ -296,14 +297,16 @@ export const teamChatData: TeamChatData = {
       id: "notif-2",
       memberId: "clara-mills",
       title: "Support queue at 80% capacity",
-      description: "Clara suggests pulling in an extra specialist for the morning rush.",
+      description:
+        "Clara suggests pulling in an extra specialist for the morning rush.",
       createdAt: "2024-09-15T09:27:20Z",
       type: "reminder",
     },
     {
       id: "notif-3",
       title: "Daily standup begins in 5 minutes",
-      description: "Join the voice room if you have blockers for the growth release.",
+      description:
+        "Join the voice room if you have blockers for the growth release.",
       createdAt: "2024-09-15T09:40:00Z",
       type: "system",
     },

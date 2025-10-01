@@ -80,7 +80,9 @@ export function NotificationTray({
               <Button
                 size="sm"
                 className="rounded-2xl bg-amber-500/90 text-white hover:bg-amber-500"
-                onClick={() => onOpenConversation(notification.id, notification.memberId)}
+                onClick={() =>
+                  onOpenConversation(notification.id, notification.memberId)
+                }
               >
                 Jump into chat
               </Button>

@@ -9,8 +9,8 @@ export default function TeamChat() {
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold text-foreground">Team Chat</h1>
           <p className="text-muted-foreground text-sm">
-            Coordinate with the Product Studio crew, hand off ideas, and review updates in
-            real time.
+            Coordinate with the Product Studio crew, hand off ideas, and review
+            updates in real time.
           </p>
         </div>
         <ChatLayout />

@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Paperclip, Smile, Send, Phone, Video, MoreVertical } from "lucide-react";
+import {
+  Paperclip,
+  Smile,
+  Send,
+  Phone,
+  Video,
+  MoreVertical,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 import type { Conversation, Message, TeamMember } from "@/data/team-chat";
@@ -53,7 +60,10 @@ export function ChatConversation({
   );
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [conversation.messages]);
 
   const isDraftValid = draft.trim().length > 0;
@@ -81,7 +91,9 @@ export function ChatConversation({
         </Avatar>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-foreground">{member.name}</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              {member.name}
+            </h2>
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground/70">
               {member.role}
             </span>
@@ -89,19 +101,37 @@ export function ChatConversation({
           <p className="text-sm text-muted-foreground">{member.location}</p>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="rounded-2xl" aria-label="Start voice call">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-2xl"
+            aria-label="Start voice call"
+          >
             <Phone className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-2xl" aria-label="Start video call">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-2xl"
+            aria-label="Start video call"
+          >
             <Video className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-2xl" aria-label="More options">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-2xl"
+            aria-label="More options"
+          >
             <MoreVertical className="h-5 w-5" />
           </Button>
         </div>
       </header>
 
-      <div ref={scrollRef} className="flex-1 space-y-6 overflow-y-auto px-8 py-6">
+      <div
+        ref={scrollRef}
+        className="flex-1 space-y-6 overflow-y-auto px-8 py-6"
+      >
         {Object.entries(grouped).map(([date, messages]) => (
           <section key={date} className="space-y-4">
             <div className="flex items-center gap-4">
@@ -117,7 +147,13 @@ export function ChatConversation({
                 const isOwn = message.authorId === currentUser.id;
 
                 return (
-                  <div key={message.id} className={cn("flex", isOwn ? "justify-end" : "justify-start")}> 
+                  <div
+                    key={message.id}
+                    className={cn(
+                      "flex",
+                      isOwn ? "justify-end" : "justify-start",
+                    )}
+                  >
                     <div className="max-w-[80%] space-y-1">
                       <motion.div
                         layout
@@ -125,7 +161,7 @@ export function ChatConversation({
                           "rounded-3xl px-5 py-3 text-sm shadow-sm",
                           isOwn
                             ? "bg-amber-500 text-white shadow-[0_15px_35px_-20px_rgba(251,191,36,0.9)]"
-                            : "bg-white text-foreground shadow-[0_10px_30px_-20px_rgba(15,23,42,0.35)] dark:bg-neutral-900"
+                            : "bg-white text-foreground shadow-[0_10px_30px_-20px_rgba(15,23,42,0.35)] dark:bg-neutral-900",
                         )}
                       >
                         {message.content}
@@ -133,11 +169,21 @@ export function ChatConversation({
                       <div
                         className={cn(
                           "flex items-center gap-2 text-[11px] uppercase tracking-wide",
-                          isOwn ? "justify-end text-white/80" : "justify-start text-muted-foreground",
+                          isOwn
+                            ? "justify-end text-white/80"
+                            : "justify-start text-muted-foreground",
                         )}
                       >
-                        <time dateTime={message.sentAt}>{formatTimestamp(message.sentAt)}</time>
-                        {isOwn && <span>{message.status === "read" ? "Seen" : message.status}</span>}
+                        <time dateTime={message.sentAt}>
+                          {formatTimestamp(message.sentAt)}
+                        </time>
+                        {isOwn && (
+                          <span>
+                            {message.status === "read"
+                              ? "Seen"
+                              : message.status}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -159,10 +205,20 @@ export function ChatConversation({
             />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="rounded-2xl" aria-label="Attach a file">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-2xl"
+                  aria-label="Attach a file"
+                >
                   <Paperclip className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="rounded-2xl" aria-label="Insert emoji">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-2xl"
+                  aria-label="Insert emoji"
+                >
                   <Smile className="h-5 w-5" />
                 </Button>
               </div>

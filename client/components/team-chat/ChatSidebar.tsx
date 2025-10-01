@@ -34,12 +34,15 @@ export function ChatSidebar({
   const summaries = useMemo(() => {
     return conversations
       .map((conversation) => {
-        const member = members.find((item) => item.id === conversation.memberId);
+        const member = members.find(
+          (item) => item.id === conversation.memberId,
+        );
         if (!member) {
           return null;
         }
 
-        const haystack = `${member.name} ${member.role} ${conversation.lastMessagePreview}`.toLowerCase();
+        const haystack =
+          `${member.name} ${member.role} ${conversation.lastMessagePreview}`.toLowerCase();
         const matchesQuery = haystack.includes(query.trim().toLowerCase());
 
         return {
@@ -79,7 +82,9 @@ export function ChatSidebar({
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
             Team chat
           </p>
-          <p className="text-base font-semibold text-foreground">Product Studio</p>
+          <p className="text-base font-semibold text-foreground">
+            Product Studio
+          </p>
         </div>
         <div className="ml-auto">
           <Button
@@ -110,7 +115,8 @@ export function ChatSidebar({
         <div className="space-y-2 pb-6">
           {summaries.map(({ conversation, member }) => {
             const isActive = conversation.id === activeConversationId;
-            const statusColor = statusColors[member.status] ?? statusColors.offline;
+            const statusColor =
+              statusColors[member.status] ?? statusColors.offline;
 
             return (
               <motion.button
@@ -133,7 +139,10 @@ export function ChatSidebar({
                 </span>
 
                 {conversation.pinned && (
-                  <span className="absolute right-3 top-3 text-amber-500" aria-label="Pinned conversation">
+                  <span
+                    className="absolute right-3 top-3 text-amber-500"
+                    aria-label="Pinned conversation"
+                  >
                     <Pin className="h-3.5 w-3.5" />
                   </span>
                 )}
@@ -182,7 +191,10 @@ export function ChatSidebar({
                     }).format(new Date(conversation.lastMessageAt))}
                   </time>
                   {conversation.unreadCount > 0 && (
-                    <span className="flex h-2 w-2 rounded-full bg-amber-500" aria-hidden />
+                    <span
+                      className="flex h-2 w-2 rounded-full bg-amber-500"
+                      aria-hidden
+                    />
                   )}
                 </div>
               </motion.button>
