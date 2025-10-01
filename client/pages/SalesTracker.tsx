@@ -120,10 +120,25 @@ export default function SalesTracker() {
               <div key={m.id} className="perspective-1000">
                 <div
                   onClick={() => handleFlip(m.id)}
-                  className={`relative h-44 w-80 cursor-pointer transform-style-preserve-3d transition-transform duration-500 ${isFlipped ? 'rotate-y-180' : ''}`}
+                  className="relative h-44 w-80 cursor-pointer"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transition: 'transform 0.6s',
+                    transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                  }}
                 >
                   {/* FRONT */}
-                  <div className={`absolute inset-0 rounded-xl overflow-hidden p-4 backface-visible-hidden shadow-lg ${isTop ? 'ring-2 ring-yellow-400' : ''}`} style={{ backgroundImage: `url(${CARD_BG})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                  <div
+                    className={`absolute inset-0 rounded-xl overflow-hidden p-4 shadow-lg ${isTop ? 'ring-2 ring-yellow-400' : ''}`}
+                    style={{
+                      backgroundImage: `url(${CARD_BG})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      WebkitBackfaceVisibility: 'hidden',
+                      backfaceVisibility: 'hidden',
+                      transform: 'rotateY(0deg)'
+                    }}
+                  >
                     {isTop && (
                       <div className="absolute left-1/2 top-2 -translate-x-1/2 z-20">
                         <svg width="46" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -135,12 +150,12 @@ export default function SalesTracker() {
                     <div className="relative z-10 h-full flex flex-col justify-between text-white">
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="text-sm opacity-90">{m.role}</div>
+                          <div className="text-sm opacity-90">American Express</div>
                           <div className="text-lg font-semibold mt-2 drop-shadow">{m.name}</div>
                         </div>
                         <div className="text-right">
                           <div className="text-xs opacity-90 uppercase tracking-wide">{s.tier}</div>
-                          <div className="text-sm font-mono mt-2">**** **** **** 1234</div>
+                          <div className="text-sm font-mono mt-2">1234 5678 1234 5678</div>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
@@ -150,11 +165,19 @@ export default function SalesTracker() {
                     </div>
 
                     {/* subtle overlay for non-top */}
-                    {!isTop && <div className="absolute inset-0 bg-black/10" />}
+                    {!isTop && <div className="absolute inset-0 bg-black/10" style={{ zIndex: 5 }} />}
                   </div>
 
                   {/* BACK */}
-                  <div className="absolute inset-0 rounded-xl bg-white p-4 text-slate-900 transform rotate-y-180 backface-visible-hidden shadow-lg">
+                  <div
+                    className="absolute inset-0 rounded-xl p-4 text-slate-900 shadow-lg"
+                    style={{
+                      background: 'white',
+                      WebkitBackfaceVisibility: 'hidden',
+                      backfaceVisibility: 'hidden',
+                      transform: 'rotateY(180deg)'
+                    }}
+                  >
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="text-sm font-semibold">Sales</div>
