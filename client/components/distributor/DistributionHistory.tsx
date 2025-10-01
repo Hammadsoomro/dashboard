@@ -136,7 +136,7 @@ function AssignmentsList({
     memberId: string;
     lines: Array<{ id: string; text: string }>;
   }>;
-  membersById: Map<string, (typeof teamChatData.members)[number]>;
+  membersById: Map<string, import("@/data/team-chat").TeamMember>;
 }) {
   const assignmentsByMember = useMemo(() => {
     const map = new Map<string, Array<{ id: string; text: string }>>();
