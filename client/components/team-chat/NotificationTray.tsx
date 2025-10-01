@@ -13,7 +13,10 @@ const iconByType: Record<ChatNotification["type"], typeof BellRing> = {
 interface NotificationTrayProps {
   notifications: ChatNotification[];
   members: TeamMember[];
-  onOpenConversation: (memberId: string | undefined) => void;
+  onOpenConversation: (
+    notificationId: string,
+    memberId: string | undefined,
+  ) => void;
   onDismiss: (notificationId: string) => void;
 }
 
@@ -77,7 +80,7 @@ export function NotificationTray({
               <Button
                 size="sm"
                 className="rounded-2xl bg-amber-500/90 text-white hover:bg-amber-500"
-                onClick={() => onOpenConversation(notification.memberId)}
+                onClick={() => onOpenConversation(notification.id, notification.memberId)}
               >
                 Jump into chat
               </Button>
