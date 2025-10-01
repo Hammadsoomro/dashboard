@@ -18,12 +18,12 @@ import { formatDistanceToNow } from "date-fns";
 export function DistributionHistory() {
   const { distributions } = useDistributor();
 
+  const { members } = useTeam();
+
   const membersById = useMemo(() => {
-    const map = new Map(
-      teamChatData.members.map((member) => [member.id, member]),
-    );
+    const map = new Map(members.map((member) => [member.id, member]));
     return map;
-  }, []);
+  }, [members]);
 
   if (distributions.length === 0) {
     return (
