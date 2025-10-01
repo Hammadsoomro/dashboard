@@ -6,7 +6,7 @@ export default function Dashboard() {
       <div className="space-y-4 md:space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
         {/* New Leads */}
-        <section className="col-span-6 sm:col-span-3 lg:col-span-2 rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6">
+        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6">
           <header className="px-6 pt-5">
             <div className="grid gap-1">
               <div className="text-sm font-semibold">New Leads</div>
@@ -130,7 +130,7 @@ export default function Dashboard() {
         </section>
 
         {/* Proposals Sent */}
-        <section className="col-span-6 sm:col-span-3 lg:col-span-2 rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6 overflow-hidden">
+        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6 overflow-hidden">
           <header className="px-6 pt-5">
             <div className="grid gap-1">
               <div className="text-sm font-semibold">Proposals Sent</div>
@@ -157,7 +157,7 @@ export default function Dashboard() {
         </section>
 
         {/* Revenue */}
-        <section className="col-span-6 sm:col-span-3 lg:col-span-1 rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
+        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
           <div className="px-6 pt-5">
             <div className="inline-flex items-center gap-2 rounded-lg bg-[color:oklab(0.723_-0.18885_0.110891_/0.1)] px-2 py-1 text-[oklch(0.723_0.219_149.579)]">
               <svg
@@ -191,7 +191,7 @@ export default function Dashboard() {
         </section>
 
         {/* Projects Won */}
-        <section className="col-span-6 sm:col-span-3 lg:col-span-1 rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
+        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
           <div className="px-6 pt-5">
             <div className="inline-flex items-center gap-2 rounded-lg bg-[color:oklab(0.6368_0.18782_0.0889076_/0.1)] px-2 py-1 text-[oklch(0.6368_0.2078_25.3313)]">
               <svg
