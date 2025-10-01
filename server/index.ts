@@ -41,6 +41,7 @@ export function createServer() {
   // Auth
   app.post("/api/auth/register", register);
   app.post("/api/auth/login", login);
+  app.get("/api/auth/me", requireAuth, me);
 
   // Team members
   app.get("/api/team", listTeam);
