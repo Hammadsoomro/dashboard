@@ -74,6 +74,16 @@ export default function Sidebar({
     [],
   );
 
+  // Live time display
+  const [now, setNow] = useState<Date>(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const timeString = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+  const dateString = now.toLocaleDateString();
+
   return (
     <aside
       className={cn(
