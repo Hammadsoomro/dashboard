@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
-import { teamChatData, type TeamMember } from "@/data/team-chat";
+import type { TeamMember } from "@/data/team-chat";
+import { useTeam } from "@/hooks/use-team";
 import { type DistributionLine, useDistributor } from "@/hooks/use-distributor";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
