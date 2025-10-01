@@ -24,6 +24,15 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Debug route to inspect important env vars
+  app.get('/api/debug/env', (_req, res) => {
+    res.json({
+      hasMongo: !!process.env.MONGODB_URI,
+      mongo: process.env.MONGODB_URI ? '[redacted]' : null,
+      jwt: !!process.env.JWT_SECRET,
+    });
+  });
+
   // Leads (Mongo)
   app.get("/api/leads", listLeads);
   app.post("/api/leads", createLead);
