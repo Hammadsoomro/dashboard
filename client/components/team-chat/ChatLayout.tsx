@@ -38,6 +38,11 @@ export function ChatLayout() {
     initialConversationId ?? teamChatData.conversations[0]?.id ?? "",
   );
   const [conversations, setConversations] = useState(initialConversations);
+  const [notifications, setNotifications] = useState<ChatNotification[]>(
+    teamChatData.notifications.map((notification) => ({ ...notification })),
+  );
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const hasSimulatedMessageRef = useRef(false);
 
   const members = teamChatData.members;
 
