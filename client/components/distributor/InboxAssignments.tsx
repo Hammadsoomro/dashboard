@@ -30,10 +30,8 @@ interface MemberInboxItem {
 export function InboxAssignments() {
   const { distributions } = useDistributor();
 
-  const memberMap = useMemo(
-    () => new Map(teamChatData.members.map((member) => [member.id, member])),
-    [],
-  );
+  const { members } = useTeam();
+  const memberMap = useMemo(() => new Map(members.map((member) => [member.id, member])), [members]);
 
   const membersWithAssignments = useMemo<MemberInboxItem[]>(() => {
     const entries = new Map<string, MemberInboxItem>();
