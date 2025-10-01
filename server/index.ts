@@ -8,6 +8,7 @@ import { requireAuth } from "./middleware/auth";
 import { listTeam, createMember, getMember, deleteMember } from "./routes/team";
 import { listConversations, getMessages, postMessage, createConversation } from "./routes/chat";
 import { listDistributions, createDistribution } from "./routes/distribution";
+import { listSales, getSalesForUser, upsertSales } from "./routes/sales";
 
 export function createServer() {
   const app = express();
