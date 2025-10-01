@@ -335,7 +335,20 @@ export function ChatLayout() {
       />
       <div className="relative flex flex-1">
         <ChatConversation member={activeMember} conversation={activeConversation} onSendMessage={handleSendMessage} />
-        <NotificationTray notifications={notifications.slice(0, 3)} members={members} onOpenConversation={() => {}} onDismiss={() => {}} />
+        <NotificationTray
+          notifications={notifications.slice(0, 3)}
+          members={members}
+          onOpenConversation={(notificationId, memberId) => {
+            // open the associated conversation and remove notification
+            const conv = conversations.find((c) => c.memberId === memberId);
+            if (conv) {
+              setActiveConversationId(conv.id);
+              setConversations((current) => current.map((c) => (c.id === conv.id ? { ...c, unreadCount: 0 } : c)));
+            }
+            setNotifications((n) => n.filter((x) => x.id !== notificationId));
+          }}
+          onDismiss={(notificationId) => setNotifications((n) => n.filter((x) => x.id !== notificationId))}
+        />
       </div>
     </div>
   );
