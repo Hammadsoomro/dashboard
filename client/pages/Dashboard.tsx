@@ -5,8 +5,8 @@ export default function Dashboard() {
     <AppShell center>
       <div className="space-y-4 md:space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-        {/* New Leads */}
-        <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6">
+          {/* New Leads */}
+          <section className="rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-6">
           <header className="px-6 pt-5">
             <div className="grid gap-1">
               <div className="text-sm font-semibold">New Leads</div>
