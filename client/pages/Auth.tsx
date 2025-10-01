@@ -37,9 +37,53 @@ export default function Auth() {
 
   const copy = panelCopy[mode];
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    navigate("/dashboard");
+    const form = new FormData(event.currentTarget as HTMLFormElement);
+    const email = String(form.get("email") ?? "").trim();
+    const password = String(form.get("password") ?? "").trim();
+    const name = String(form.get("name") ?? "").trim();
+    if (!email || !password || (mode === "register" && !name)) {
+      alert("Please fill required fields");
+      return;
+    }
+
+    try {
+      if (mode === "login") {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          alert(body?.message || "Login failed");
+          return;
+        }
+        const data = await res.json();
+        // store token temporarily
+        try { localStorage.setItem("token", data.token); } catch {}
+        navigate("/dashboard");
+      } else {
+        // register
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          alert(body?.message || "Register failed");
+          return;
+        }
+        const data = await res.json();
+        try { localStorage.setItem("token", data.token); } catch {}
+        navigate("/dashboard");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Unexpected error");
+    }
   };
 
   return (
