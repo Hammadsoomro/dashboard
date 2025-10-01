@@ -45,8 +45,9 @@ export function createServer() {
 
   // Team members
   app.get("/api/team", listTeam);
-  app.post("/api/team", createMember);
+  app.post("/api/team", requireAuth, createMember);
   app.get("/api/team/:id", getMember);
+  app.delete("/api/team/:id", requireAuth, deleteMember);
 
   // Chat
   app.get("/api/chat/conversations", listConversations);
