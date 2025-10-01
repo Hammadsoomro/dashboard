@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getCollection } from "@/lib/mongo";
+import { getCollection } from "../lib/mongo";
 
 export const listTeam: RequestHandler = async (req, res) => {
   try {
