@@ -103,14 +103,29 @@ export function ChatLayout() {
   const handleSelectConversation = useCallback((conversationId: string) => {
     setActiveConversationId(conversationId);
     setConversations((current) =>
-      current.map((conversation) =>
-        conversation.id === conversationId
-          ? {
-              ...conversation,
-              unreadCount: 0,
-            }
-          : conversation,
-      ),
+      current.map((conversation) => {
+        if (conversation.id !== conversationId) {
+          return conversation;
+        }
+
+        const updatedMessages = conversation.messages.map((message, index, array) => {
+          if (
+            index === array.length - 1 &&
+            message.authorId === conversation.memberId &&
+            message.status !== "read"
+          ) {
+            return { ...message, status: "read" as const };
+          }
+
+          return message;
+        });
+
+        return {
+          ...conversation,
+          unreadCount: 0,
+          messages: updatedMessages,
+        };
+      }),
     );
   }, []);
 
