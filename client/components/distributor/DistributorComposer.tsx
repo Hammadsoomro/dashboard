@@ -1,10 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { teamChatData, type TeamMember } from "@/data/team-chat";
-import {
-  type DistributionLine,
-  useDistributor,
-} from "@/hooks/use-distributor";
+import { type DistributionLine, useDistributor } from "@/hooks/use-distributor";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,7 +52,8 @@ export function DistributorComposer() {
     [inputValue],
   );
 
-  const intervalSeconds = INTERVAL_OPTIONS[intervalIndex] ?? INTERVAL_OPTIONS[0];
+  const intervalSeconds =
+    INTERVAL_OPTIONS[intervalIndex] ?? INTERVAL_OPTIONS[0];
 
   const handleMemberToggle = (memberId: string) => {
     setSelectedMemberIds((current) => {
@@ -102,7 +100,10 @@ export function DistributorComposer() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="distributor-input" className="text-sm font-medium">
+              <Label
+                htmlFor="distributor-input"
+                className="text-sm font-medium"
+              >
                 Notepad input
               </Label>
               <Badge variant="secondary">{dedupedLines.length} unique</Badge>
@@ -193,7 +194,10 @@ function DistributionSettings({
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium" htmlFor="distribution-interval">
+            <Label
+              className="text-sm font-medium"
+              htmlFor="distribution-interval"
+            >
               Send cadence
             </Label>
             <Badge variant="outline">{intervalSeconds} sec</Badge>
@@ -305,7 +309,10 @@ function DistributionPreview({ lines }: { lines: DistributionLine[] }) {
                     <span>#{index + 1}</span>
                     <span>{line.wordCount} words</span>
                   </div>
-                  <p className="mt-2 font-medium text-foreground" title={line.text}>
+                  <p
+                    className="mt-2 font-medium text-foreground"
+                    title={line.text}
+                  >
                     {line.preview}
                   </p>
                 </li>

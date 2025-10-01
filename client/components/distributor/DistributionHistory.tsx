@@ -19,7 +19,9 @@ export function DistributionHistory() {
   const { distributions } = useDistributor();
 
   const membersById = useMemo(() => {
-    const map = new Map(teamChatData.members.map((member) => [member.id, member]));
+    const map = new Map(
+      teamChatData.members.map((member) => [member.id, member]),
+    );
     return map;
   }, []);
 
@@ -29,8 +31,8 @@ export function DistributionHistory() {
         <CardHeader>
           <CardTitle>No distributions yet</CardTitle>
           <CardDescription>
-            Prepare lines above, pick teammates, and schedule them to see a running
-            history here.
+            Prepare lines above, pick teammates, and schedule them to see a
+            running history here.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -54,7 +56,8 @@ export function DistributionHistory() {
                     Distribution #{distributions.length - index}
                   </CardTitle>
                   <CardDescription>
-                    Scheduled {createdLabel} · {distribution.memberIds.length} teammate
+                    Scheduled {createdLabel} · {distribution.memberIds.length}{" "}
+                    teammate
                     {distribution.memberIds.length === 1 ? "" : "s"}
                   </CardDescription>
                 </div>
@@ -129,7 +132,10 @@ function AssignmentsList({
   membersById,
 }: {
   memberIds: string[];
-  assignments: Array<{ memberId: string; lines: Array<{ id: string; text: string }> }>;
+  assignments: Array<{
+    memberId: string;
+    lines: Array<{ id: string; text: string }>;
+  }>;
   membersById: Map<string, (typeof teamChatData.members)[number]>;
 }) {
   const assignmentsByMember = useMemo(() => {
@@ -165,7 +171,9 @@ function AssignmentsList({
                     {member?.name ?? "Unnamed teammate"}
                   </p>
                   {member?.role ? (
-                    <p className="text-xs text-muted-foreground">{member.role}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {member.role}
+                    </p>
                   ) : null}
                 </div>
                 <Badge variant="secondary">
@@ -184,7 +192,8 @@ function AssignmentsList({
                       key={line.id}
                       className={cn(
                         "px-3 py-2 text-xs text-foreground",
-                        index !== lines.length - 1 && "border-b border-border/60",
+                        index !== lines.length - 1 &&
+                          "border-b border-border/60",
                       )}
                     >
                       {line.text}
@@ -192,7 +201,9 @@ function AssignmentsList({
                   ))}
                 </div>
               )}
-              {memberId !== memberIds[memberIds.length - 1] ? <Separator /> : null}
+              {memberId !== memberIds[memberIds.length - 1] ? (
+                <Separator />
+              ) : null}
             </div>
           );
         })}

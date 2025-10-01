@@ -28,23 +28,23 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/login" element={<Auth />} />
-          <Route path="/register" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/team-chat" element={<TeamChat />} />
-          <Route path="/inbox" element={<Inbox />} />
-          <Route path="/distributor" element={<Distributor />} />
-          <Route path="/sales-tracker" element={<SalesTracker />} />
-          <Route path="/team-management" element={<TeamManagement />} />
-          <Route path="/settings" element={<Settings />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </DistributorProvider>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Auth />} />
+            <Route path="/register" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/team-chat" element={<TeamChat />} />
+            <Route path="/inbox" element={<Inbox />} />
+            <Route path="/distributor" element={<Distributor />} />
+            <Route path="/sales-tracker" element={<SalesTracker />} />
+            <Route path="/team-management" element={<TeamManagement />} />
+            <Route path="/settings" element={<Settings />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </DistributorProvider>
   </QueryClientProvider>
 );
 

@@ -82,8 +82,8 @@ export function InboxAssignments() {
         <CardHeader>
           <CardTitle>No lines distributed yet</CardTitle>
           <CardDescription>
-            When the distributor sends lines to teammates, their queue will appear
-            here automatically.
+            When the distributor sends lines to teammates, their queue will
+            appear here automatically.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -106,8 +106,9 @@ export function InboxAssignments() {
                   {member?.name ?? "Teammate"}
                 </CardTitle>
                 <CardDescription>
-                  {totalLines} line{totalLines === 1 ? "" : "s"} scheduled across {" "}
-                  {assignments.length} batch{assignments.length === 1 ? "" : "es"}.
+                  {totalLines} line{totalLines === 1 ? "" : "s"} scheduled
+                  across {assignments.length} batch
+                  {assignments.length === 1 ? "" : "es"}.
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
@@ -155,8 +156,7 @@ export function InboxAssignments() {
                               <div className="flex items-center justify-between text-xs text-muted-foreground">
                                 <span>Line {index + 1}</span>
                                 <span>
-                                  {index * distribution.intervalSeconds}
-                                  s mark
+                                  {index * distribution.intervalSeconds}s mark
                                 </span>
                               </div>
                               <p className="text-foreground">{line.text}</p>

@@ -8,7 +8,8 @@ export default function Inbox() {
         <header className="space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">Inbox</h1>
           <p className="text-muted-foreground">
-            Review the lines distributed to each teammate and monitor their delivery cadence.
+            Review the lines distributed to each teammate and monitor their
+            delivery cadence.
           </p>
         </header>
         <section aria-label="Distributed lines feed">

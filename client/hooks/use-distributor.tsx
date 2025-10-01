@@ -86,24 +86,24 @@ function buildAssignments(
 export function DistributorProvider({ children }: { children: ReactNode }) {
   const [distributions, setDistributions] = useState<DistributionRecord[]>([]);
 
-  const addDistribution = useCallback<DistributorContextValue["addDistribution"]>(
-    ({ lines, linesPerMember, intervalSeconds, memberIds }) => {
-      const createdAt = new Date().toISOString();
-      const assignments = buildAssignments(lines, memberIds, linesPerMember);
-      const record: DistributionRecord = {
-        id: generateId("distribution"),
-        createdAt,
-        lines,
-        linesPerMember,
-        intervalSeconds,
-        memberIds,
-        assignments,
-      };
+  const addDistribution = useCallback<
+    DistributorContextValue["addDistribution"]
+  >(({ lines, linesPerMember, intervalSeconds, memberIds }) => {
+    const createdAt = new Date().toISOString();
+    const assignments = buildAssignments(lines, memberIds, linesPerMember);
+    const record: DistributionRecord = {
+      id: generateId("distribution"),
+      createdAt,
+      lines,
+      linesPerMember,
+      intervalSeconds,
+      memberIds,
+      assignments,
+    };
 
-      setDistributions((current) => [record, ...current]);
-      return record;
-    },
-  );
+    setDistributions((current) => [record, ...current]);
+    return record;
+  });
 
   const clearDistributions = useCallback(() => {
     setDistributions([]);
