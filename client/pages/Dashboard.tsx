@@ -227,7 +227,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-6">
           {/* Revenue Growth (YTD) */}
-        <section className="col-span-6 lg:col-span-2 rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
+          <section className="col-span-6 lg:col-span-2 rounded-2xl bg-white shadow-sm border border-black/5 flex flex-col gap-4">
           <header className="px-6 pt-5">
             <div className="text-sm font-semibold">Revenue Growth</div>
             <div className="text-xs text-muted-foreground">
