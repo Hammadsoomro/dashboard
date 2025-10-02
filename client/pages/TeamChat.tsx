@@ -1,5 +1,6 @@
 import AppShell from "@/components/layout/AppShell";
 
+import AppShell from "@/components/layout/AppShell";
 import { ChatLayout } from "@/components/team-chat/ChatLayout";
 
 export default function TeamChat() {
