@@ -1,5 +1,7 @@
 import AppShell from "@/components/layout/AppShell";
 
+import AppShell from "@/components/layout/AppShell";
+
 export default function Dashboard() {
   return (
     <AppShell center>
