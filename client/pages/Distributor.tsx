@@ -1,5 +1,4 @@
 import AppShell from "@/components/layout/AppShell";
-import AppShell from "@/components/layout/AppShell";
 import { DistributionHistory } from "@/components/distributor/DistributionHistory";
 import { DistributorComposer } from "@/components/distributor/DistributorComposer";
 
