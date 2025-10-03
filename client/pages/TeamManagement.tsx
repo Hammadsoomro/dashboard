@@ -1,6 +1,5 @@
 import AppShell from "@/components/layout/AppShell";
 import { useEffect, useState } from "react";
-import AppShell from "@/components/layout/AppShell";
 import { useTeam } from "@/hooks/use-team";
 
 export default function TeamManagement() {
@@ -12,8 +11,6 @@ export default function TeamManagement() {
   const [busy, setBusy] = useState(false);
 
   const refresh = () => {
-    // useTeam already polls once; simplest is to reload the page data by reloading window
-    // but better we call GET /api/team directly and update a local state. For now force a refresh by navigation.
     window.location.reload();
   };
 
