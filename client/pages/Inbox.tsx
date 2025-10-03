@@ -1,5 +1,4 @@
 import AppShell from "@/components/layout/AppShell";
-import AppShell from "@/components/layout/AppShell";
 import { InboxAssignments } from "@/components/distributor/InboxAssignments";
 
 export default function Inbox() {
