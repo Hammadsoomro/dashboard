@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useEffect, useMemo, useState } from "react";
 import AppShell from "@/components/layout/AppShell";
+import { useEffect, useMemo, useState } from "react";
 import { useTeam } from "@/hooks/use-team";
 
 type Sales = { userId: string; today: number; weekly: number; monthly: number; tier: string };
@@ -30,7 +29,6 @@ export default function SalesTracker() {
     }
     load();
 
-    // load current user to detect admin for frontend
     (async () => {
       try {
         const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
@@ -45,22 +43,12 @@ export default function SalesTracker() {
     })();
   }, []);
 
-  const tierKeys = [
-    'silver',
-    'gold',
-    'platinum',
-    'platinium', // accept alternate spelling if present in data
-    'diamond',
-    'ruby',
-    'sapphire',
-  ];
-
+  const tierKeys = ['silver','gold','platinum','platinium','diamond','ruby','sapphire'];
   const tiers = ['Silver','Gold','Platinum','Diamond','Ruby','Sapphire'];
 
   const tierCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     tierKeys.forEach((t) => counts[t] = 0);
-    // count from sales state and default to silver if missing
     members.forEach((m) => {
       const s = sales[m.id];
       const t = (s?.tier || 'silver').toLowerCase();
@@ -69,7 +57,6 @@ export default function SalesTracker() {
     return counts;
   }, [sales, members]);
 
-  // determine top performer by total sales (today+weekly+monthly)
   const topId = useMemo(() => {
     let bestId: string | null = null;
     let bestScore = -Infinity;
@@ -82,15 +69,8 @@ export default function SalesTracker() {
   }, [sales, members]);
 
   const handleFlip = (id: string) => setFlipped((s) => ({ ...s, [id]: !s[id] }));
-
-  const handleEdit = (id: string) => {
-    setEditing((e) => ({ ...e, [id]: !e[id] }));
-    setForm((f) => ({ ...f, [id]: sales[id] ? { ...sales[id] } : { userId: id, today:0,weekly:0,monthly:0,tier:'silver' } }));
-  };
-
-  const handleChange = (id: string, key: keyof Sales, value: any) => {
-    setForm((f) => ({ ...f, [id]: { ...(f[id] || {}), [key]: value } }));
-  };
+  const handleEdit = (id: string) => { setEditing((e) => ({ ...e, [id]: !e[id] })); setForm((f) => ({ ...f, [id]: sales[id] ? { ...sales[id] } : { userId: id, today:0,weekly:0,monthly:0,tier:'silver' } })); };
+  const handleChange = (id: string, key: keyof Sales, value: any) => setForm((f) => ({ ...f, [id]: { ...(f[id] || {}), [key]: value } }));
 
   const save = async (id: string) => {
     const payload = form[id];
@@ -122,24 +102,9 @@ export default function SalesTracker() {
                 <div
                   onClick={() => handleFlip(m.id)}
                   className="relative h-44 w-80 cursor-pointer"
-                  style={{
-                    transformStyle: 'preserve-3d',
-                    transition: 'transform 0.6s',
-                    transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                  }}
+                  style={{ transformStyle: 'preserve-3d', transition: 'transform 0.6s', transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'}}
                 >
-                  {/* FRONT */}
-                  <div
-                    className={`absolute inset-0 rounded-xl overflow-hidden p-4 shadow-lg ${isTop ? 'ring-2 ring-yellow-400' : ''}`}
-                    style={{
-                      backgroundImage: `url(${CARD_BG})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      WebkitBackfaceVisibility: 'hidden',
-                      backfaceVisibility: 'hidden',
-                      transform: 'rotateY(0deg)'
-                    }}
-                  >
+                  <div className={`absolute inset-0 rounded-xl overflow-hidden p-4 shadow-lg ${isTop ? 'ring-2 ring-yellow-400' : ''}`} style={{ backgroundImage: `url(${CARD_BG})`, backgroundSize: 'cover', backgroundPosition: 'center', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(0deg)'}}>
                     {isTop && (
                       <div className="absolute left-1/2 top-2 -translate-x-1/2 z-20">
                         <svg width="46" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -166,20 +131,10 @@ export default function SalesTracker() {
                       </div>
                     </div>
 
-                    {/* subtle overlay for non-top */}
                     {!isTop && <div className="absolute inset-0 bg-black/10" style={{ zIndex: 5 }} />}
                   </div>
 
-                  {/* BACK */}
-                  <div
-                    className="absolute inset-0 rounded-xl p-4 text-slate-900 shadow-lg"
-                    style={{
-                      background: 'white',
-                      WebkitBackfaceVisibility: 'hidden',
-                      backfaceVisibility: 'hidden',
-                      transform: 'rotateY(180deg)'
-                    }}
-                  >
+                  <div className="absolute inset-0 rounded-xl p-4 text-slate-900 shadow-lg" style={{ background: 'white', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(180deg)'}}>
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="text-sm font-semibold">Sales</div>
