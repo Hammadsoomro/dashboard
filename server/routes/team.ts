@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 // Helper to check if requesting user is admin
 async function isRequestingUserAdmin(req: any) {
-  const userId = req.userId;
+  const userId = (req as any).userId;
   if (!userId) return false;
   const users = await getCollection("users");
   try {
@@ -20,8 +20,8 @@ async function isRequestingUserAdmin(req: any) {
 export const listTeam: RequestHandler = async (req, res) => {
   try {
     const users = await getCollection("users");
-    // Only return members of the requesting user's team. requireAuth should have set req.userId
-    const requesterId = req.userId;
+    // Only return members of the requesting user's team. requireAuth should have set (req as any).userId
+    const requesterId = (req as any).userId;
     if (!requesterId) {
       res.status(401).json({ message: 'Not authenticated' });
       return;
@@ -56,7 +56,7 @@ export const getMember: RequestHandler = async (req, res) => {
     }
 
     // only allow if requester is in same team
-    const requesterId = req.userId;
+    const requesterId = (req as any).userId;
     if (requesterId) {
       const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
       const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
@@ -95,7 +95,7 @@ export const createMember: RequestHandler = async (req, res) => {
     }
 
     // determine team of requesting admin
-    const requesterId = req.userId;
+    const requesterId = (req as any).userId;
     const requester = requesterId ? await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() }) : null;
     const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
 
@@ -121,7 +121,7 @@ export const deleteMember: RequestHandler = async (req, res) => {
     const users = await getCollection("users");
 
     // ensure target is in same team as requester
-    const requesterId = req.userId;
+    const requesterId = (req as any).userId;
     const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
     const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
 
