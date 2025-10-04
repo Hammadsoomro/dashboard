@@ -109,13 +109,13 @@ export function DistributorProvider({ children }: { children: ReactNode }) {
       if (!token) return;
       const res = await fetch('/api/distributions', { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) return;
-      const data: DistributionRecord[] = await res.json();
+      const data: any[] = await res.json();
       setDistributions(data.map((d:any) => ({
         id: d._id?.$oid ?? (d._id ? String(d._id) : d.id),
         createdAt: d.createdAt,
         lines: d.items ?? d.lines ?? [],
-        linesPerMember: d.linesPerMember ?? d.linesPerMember ?? 1,
-        intervalSeconds: d.intervalSeconds ?? d.intervalSeconds ?? 1,
+        linesPerMember: d.linesPerMember ?? 1,
+        intervalSeconds: d.intervalSeconds ?? 1,
         memberIds: d.assignments ? d.assignments.map((a:any)=>a.memberId) : (d.memberIds || []),
         assignments: d.assignments?.map((a:any)=>({ memberId: a.memberId, lines: a.lines })) || [],
       })));
