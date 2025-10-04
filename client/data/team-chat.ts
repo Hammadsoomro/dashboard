@@ -34,7 +34,7 @@ export interface ChatNotification {
   title: string;
   description: string;
   createdAt: string;
-  type: "mention" | "system" | "reminder";
+  type: "mention" | "system" | "reminder" | "message";
   memberId?: string;
 }
 
