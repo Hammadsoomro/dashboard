@@ -124,7 +124,7 @@ export function ChatLayout() {
 
         for (const conv of convs || []) {
           const convId = getId(conv) ?? conv.id;
-          const messagesRes = await fetch(`/api/chat/${convId}/messages`);
+          const messagesRes = await fetch(`/api/chat/${convId}/messages`, { headers });
           const msgs = messagesRes.ok ? await messagesRes.json() : [];
 
           const mappedMessages: Message[] = (msgs || []).map((m: any) => ({
@@ -181,7 +181,10 @@ export function ChatLayout() {
     let mounted = true;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch('/api/chat/conversations');
+        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const headers: any = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch('/api/chat/conversations', { headers });
         if (!res.ok) return;
         const convs = await res.json();
         if (!mounted) return;
@@ -194,7 +197,10 @@ export function ChatLayout() {
             if (!existing) {
               // New conversation - fetch messages
               (async () => {
-                const messagesRes = await fetch(`/api/chat/${convId}/messages`);
+                const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+                const headers: any = {};
+                if (token) headers.Authorization = `Bearer ${token}`;
+                const messagesRes = await fetch(`/api/chat/${convId}/messages`, { headers });
                 const msgs = messagesRes.ok ? await messagesRes.json() : [];
                 const mappedMessages: Message[] = (msgs || []).map((m: any) => ({ id: getId(m) ?? m.id, authorId: m.authorId, content: m.content, sentAt: m.sentAt, status: m.status ?? 'delivered' }));
                 setConversations((cur) => {
