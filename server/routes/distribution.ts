@@ -1,5 +1,6 @@
 import { getCollection } from "../lib/mongo";
 import { ObjectId } from "mongodb";
+import type { RequestHandler } from 'express';
 
 export const listDistributions: RequestHandler = async (req, res) => {
   try {
