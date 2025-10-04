@@ -114,3 +114,45 @@ export const me: RequestHandler = async (req: Request & { userId?: string }, res
     res.status(500).json({ message: "Unexpected error" });
   }
 };
+
+export const updateProfile: RequestHandler = async (req: Request & { userId?: string }, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ message: 'Not authenticated' });
+      return;
+    }
+
+    const { name, avatarUrl, currentPassword, newPassword } = req.body ?? {};
+    if (!name && !avatarUrl && !newPassword) {
+      res.status(400).json({ message: 'Nothing to update' });
+      return;
+    }
+
+    const users = await getCollection('users');
+    let query: any;
+    try { query = { _id: new ObjectId(userId) }; } catch { query = { _id: userId }; }
+    const user = await users.findOne(query);
+    if (!user) { res.status(404).json({ message: 'Not found' }); return; }
+
+    const update: any = {};
+    if (name) update.name = name;
+    if (avatarUrl) update.avatarUrl = avatarUrl;
+
+    if (newPassword) {
+      // verify currentPassword
+      if (!currentPassword) { res.status(400).json({ message: 'currentPassword required to change password' }); return; }
+      const ok = await bcrypt.compare(currentPassword, user.passwordHash || '');
+      if (!ok) { res.status(401).json({ message: 'Invalid current password' }); return; }
+      const passwordHash = await bcrypt.hash(newPassword, 10);
+      update.passwordHash = passwordHash;
+    }
+
+    await users.updateOne(query, { $set: update });
+    const updated = await users.findOne(query, { projection: { passwordHash: 0 } });
+    res.json(updated);
+  } catch (e: any) {
+    console.error(e);
+    res.status(500).json({ message: 'Unexpected error' });
+  }
+};
