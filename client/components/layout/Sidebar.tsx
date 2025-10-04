@@ -205,8 +205,7 @@ export default function Sidebar({
 
                       {!collapsed && isInbox && (
                         <span className="inline-flex items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">
-                          {/* placeholder for unread count; updated below via DOM mutation */}
-                          {''}
+                          {unreadInbox > 0 ? unreadInbox : ''}
                         </span>
                       )}
                     </div>
