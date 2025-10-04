@@ -93,7 +93,7 @@ export default function TeamManagement() {
               <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
             </div>
             <div className="sm:col-span-2 flex items-center gap-3">
-              <input id="isAdmin" type="checkbox" checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />
+              <input id="isAdmin" type="checkbox" checked={newMemberIsAdmin} onChange={(e) => setNewMemberIsAdmin(e.target.checked)} />
               <label htmlFor="isAdmin" className="text-sm">Make admin</label>
             </div>
             <div className="sm:col-span-2">
