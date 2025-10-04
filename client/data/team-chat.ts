@@ -3,6 +3,7 @@ export type PresenceStatus = "online" | "away" | "offline" | "dnd";
 export interface TeamMember {
   id: string;
   name: string;
+  email?: string;
   role: string;
   status: PresenceStatus;
   location: string;
@@ -33,7 +34,7 @@ export interface ChatNotification {
   title: string;
   description: string;
   createdAt: string;
-  type: "mention" | "system" | "reminder";
+  type: "mention" | "system" | "reminder" | "message";
   memberId?: string;
 }
 

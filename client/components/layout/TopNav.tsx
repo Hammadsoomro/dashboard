@@ -4,10 +4,13 @@ import {
   Search,
   Settings,
   SunMedium,
+  LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function TopNav() {
+  const navigate = useNavigate();
   const [theme, setTheme] = useState<"light" | "dark">(() =>
     document.documentElement.classList.contains("dark") ? "dark" : "light",
   );
@@ -49,10 +52,16 @@ export default function TopNav() {
             )}
           </button>
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-gradient-to-br from-emerald-400 via-sky-400 to-indigo-500 text-white shadow-sm transition hover:brightness-110 dark:border-white/10"
-            aria-label="Account menu"
+            onClick={() => {
+              try {
+                localStorage.removeItem("token");
+              } catch {}
+              navigate("/login");
+            }}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white text-neutral-600 shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-neutral-200"
+            aria-label="Logout"
           >
-            <CircleUserRound className="h-5 w-5" />
+            <LogOut className="h-4 w-4" />
           </button>
         </div>
       </div>

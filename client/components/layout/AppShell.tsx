@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState, useEffect } from "react";
 
 import TopNav from "./TopNav";
 import Sidebar from "./Sidebar";
@@ -16,11 +16,31 @@ type AppShellProps = {
 
 export default function AppShell({ children, center = false }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [currentUser, setCurrentUser] = useState<typeof defaultUser | null>(null);
 
   const contentWrapperClass = useMemo(
     () => `${center ? "mx-auto max-w-6xl" : "w-full"} px-2 sm:px-4 lg:px-6`,
     [center],
   );
+
+  useEffect(() => {
+    let mounted = true;
+    const token = (() => {
+      try { return localStorage.getItem('token'); } catch { return null; }
+    })();
+    if (!token) return;
+    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!mounted) return;
+        if (data) {
+          setCurrentUser({ name: data.name ?? defaultUser.name, email: data.email ?? defaultUser.email, role: data.role ?? defaultUser.role });
+        }
+      })
+      .catch((err) => console.error('Failed to load current user', err));
+
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[oklch(0.9789_0.0082_121.627)] dark:bg-neutral-950">
@@ -28,12 +48,12 @@ export default function AppShell({ children, center = false }: AppShellProps) {
         <Sidebar
           collapsed={collapsed}
           onCollapseToggle={() => setCollapsed((state) => !state)}
-          user={defaultUser}
+          user={currentUser ?? defaultUser}
         />
         <div className="flex flex-1 flex-col overflow-hidden">
           <TopNav />
           <main className="flex-1 overflow-y-auto py-6">
-            <div className={contentWrapperClass}>{children}</div>
+            <div className={`${contentWrapperClass} h-full`}>{children}</div>
           </main>
         </div>
       </div>

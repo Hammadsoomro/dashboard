@@ -3,11 +3,13 @@ import { BellRing, Inbox, CalendarClock, X } from "lucide-react";
 import type { ChatNotification, TeamMember } from "@/data/team-chat";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { BellRing, Inbox, CalendarClock, X } from "lucide-react";
 
-const iconByType: Record<ChatNotification["type"], typeof BellRing> = {
+const iconByType: Record<ChatNotification["type"], any> = {
   mention: BellRing,
   reminder: Inbox,
   system: CalendarClock,
+  message: BellRing,
 };
 
 interface NotificationTrayProps {

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
-import { teamChatData, type TeamMember } from "@/data/team-chat";
+import type { TeamMember } from "@/data/team-chat";
+import { useTeam } from "@/hooks/use-team";
 import { type DistributionLine, useDistributor } from "@/hooks/use-distributor";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -35,11 +36,12 @@ export function DistributorComposer() {
   const { toast } = useToast();
 
   const [inputValue, setInputValue] = useState("");
+  const { members } = useTeam();
   const onlineMembers = useMemo(
-    () => teamChatData.members.filter((member) => member.status === "online"),
-    [],
+    () => members.filter((member) => member.status === "online"),
+    [members],
   );
-  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() =>
     onlineMembers.map((member) => member.id),
   );
   const [linesPerMember, setLinesPerMember] = useState<number>(
@@ -64,24 +66,32 @@ export function DistributorComposer() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!dedupedLines.length || !selectedMemberIds.length) {
       return;
     }
 
-    const record = addDistribution({
-      lines: dedupedLines,
-      linesPerMember,
-      intervalSeconds,
-      memberIds: selectedMemberIds,
-    });
+    try {
+      const record = await addDistribution({
+        lines: dedupedLines,
+        linesPerMember,
+        intervalSeconds,
+        memberIds: selectedMemberIds,
+      });
 
-    toast({
-      title: "Distribution scheduled",
-      description: `${record.lines.length} unique lines will start rolling out every ${record.intervalSeconds} seconds.`,
-    });
+      toast({
+        title: "Distribution scheduled",
+        description: `${record.lines.length} unique lines will start rolling out every ${record.intervalSeconds} seconds.`,
+      });
 
-    setInputValue("");
+      setInputValue("");
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        title: "Failed to schedule distribution",
+        description: e?.message || String(e),
+      });
+    }
   };
 
   const isSubmitDisabled =

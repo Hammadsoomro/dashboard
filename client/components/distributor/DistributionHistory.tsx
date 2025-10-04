@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import { teamChatData } from "@/data/team-chat";
 import { useDistributor } from "@/hooks/use-distributor";
+import { useTeam } from "@/hooks/use-team";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -18,12 +18,12 @@ import { formatDistanceToNow } from "date-fns";
 export function DistributionHistory() {
   const { distributions } = useDistributor();
 
+  const { members } = useTeam();
+
   const membersById = useMemo(() => {
-    const map = new Map(
-      teamChatData.members.map((member) => [member.id, member]),
-    );
+    const map = new Map(members.map((member) => [member.id, member]));
     return map;
-  }, []);
+  }, [members]);
 
   if (distributions.length === 0) {
     return (
@@ -136,7 +136,7 @@ function AssignmentsList({
     memberId: string;
     lines: Array<{ id: string; text: string }>;
   }>;
-  membersById: Map<string, (typeof teamChatData.members)[number]>;
+  membersById: Map<string, import("@/data/team-chat").TeamMember>;
 }) {
   const assignmentsByMember = useMemo(() => {
     const map = new Map<string, Array<{ id: string; text: string }>>();

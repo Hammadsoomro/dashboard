@@ -1,18 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { teamChatData, type ChatNotification } from "@/data/team-chat";
-
+import type {
+  TeamMember,
+  Conversation,
+  ChatNotification,
+  Message,
+} from "@/data/team-chat";
 import { ChatSidebar } from "./ChatSidebar";
 import { ChatConversation } from "./ChatConversation";
 import { NotificationTray } from "./NotificationTray";
-
-function cloneConversations() {
-  return teamChatData.conversations.map((conversation) => ({
-    ...conversation,
-    messages: conversation.messages.map((message) => ({ ...message })),
-  }));
-}
 
 function generateMessageId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -22,30 +19,28 @@ function generateMessageId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-const initialConversations = cloneConversations();
-
-type IncomingNotificationPayload = Omit<ChatNotification, "id" | "createdAt">;
-
-const initialConversationId = [...initialConversations].sort((a, b) => {
-  if (a.pinned && !b.pinned) return -1;
-  if (!a.pinned && b.pinned) return 1;
-  return (
-    new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-  );
-})[0]?.id;
+function getId(obj: any) {
+  if (!obj) return undefined;
+  if (typeof obj === "string") return obj;
+  if (obj._id) {
+    if (typeof obj._id === "string") return obj._id;
+    if (obj._id.$oid) return obj._id.$oid;
+    try {
+      return String(obj._id);
+    } catch {
+      return undefined;
+    }
+  }
+  return obj.id ?? undefined;
+}
 
 export function ChatLayout() {
-  const [activeConversationId, setActiveConversationId] = useState(
-    initialConversationId ?? teamChatData.conversations[0]?.id ?? "",
-  );
-  const [conversations, setConversations] = useState(initialConversations);
-  const [notifications, setNotifications] = useState<ChatNotification[]>(
-    teamChatData.notifications.map((notification) => ({ ...notification })),
-  );
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const hasSimulatedMessageRef = useRef(false);
+  const [activeConversationId, setActiveConversationId] = useState<string>("");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [notifications, setNotifications] = useState<ChatNotification[]>([]);
+  const [members, setMembers] = useState<TeamMember[]>([]);
 
-  const members = teamChatData.members;
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const playNotificationSound = useCallback(() => {
     if (typeof window === "undefined") {
@@ -91,142 +86,117 @@ export function ChatLayout() {
     oscillator.stop(now + 0.45);
   }, []);
 
-  const activeConversation = useMemo(
-    () =>
-      conversations.find(
-        (conversation) => conversation.id === activeConversationId,
-      ),
-    [conversations, activeConversationId],
-  );
+  const fetchInitialData = useCallback(async () => {
+    const maxRetries = 3;
+    let attempt = 0;
 
-  const activeMember = useMemo(() => {
-    if (!activeConversation) {
-      return undefined;
-    }
+    while (attempt < maxRetries) {
+      attempt += 1;
+      try {
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
+        const headers: any = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const [teamRes, convRes] = await Promise.all([
+          fetch("/api/team", { headers }),
+          fetch("/api/chat/conversations", { headers }),
+        ]);
 
-    return members.find((member) => member.id === activeConversation.memberId);
-  }, [activeConversation, members]);
-
-  const handleSelectConversation = useCallback((conversationId: string) => {
-    setActiveConversationId(conversationId);
-    setConversations((current) =>
-      current.map((conversation) => {
-        if (conversation.id !== conversationId) {
-          return conversation;
+        if (!teamRes.ok || !convRes.ok) {
+          const teamText = await teamRes.text().catch(() => "<no-body>");
+          const convText = await convRes.text().catch(() => "<no-body>");
+          console.error(
+            `Failed to fetch initial chat data (attempt ${attempt}): teamRes=${teamRes.status}, convRes=${convRes.status}`,
+            { teamText, convText },
+          );
+          // wait before retrying
+          await new Promise((r) => setTimeout(r, 500 * attempt));
+          continue;
         }
 
-        const updatedMessages = conversation.messages.map(
-          (message, index, array) => {
-            if (
-              index === array.length - 1 &&
-              message.authorId === conversation.memberId &&
-              message.status !== "read"
-            ) {
-              return { ...message, status: "read" as const };
-            }
+        const team = await teamRes.json();
+        const convs = await convRes.json();
 
-            return message;
-          },
+        setMembers(
+          (team || []).map((u: any) => ({
+            id: getId(u) ?? u.email,
+            name: u.name,
+            role: u.role ?? "member",
+            status: u.status ?? "online",
+            location: u.location ?? "",
+            avatarUrl: u.avatarUrl ?? undefined,
+          })),
         );
 
-        return {
-          ...conversation,
-          unreadCount: 0,
-          messages: updatedMessages,
-        };
-      }),
-    );
+        // Load messages for each conversation
+        const convsWithMessages: Conversation[] = [];
+
+        for (const conv of convs || []) {
+          const convId = getId(conv) ?? conv.id;
+          const messagesRes = await fetch(`/api/chat/${convId}/messages`, {
+            headers,
+          });
+          const msgs = messagesRes.ok ? await messagesRes.json() : [];
+
+          const mappedMessages: Message[] = (msgs || []).map((m: any) => ({
+            id: getId(m) ?? m.id,
+            authorId: m.authorId,
+            content: m.content,
+            sentAt: m.sentAt,
+            status: m.status ?? "delivered",
+          }));
+
+          // Determine memberId for UI (for 1:1 chats use first member id)
+          const memberId =
+            conv.memberId ??
+            (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined);
+
+          convsWithMessages.push({
+            id: convId,
+            memberId: memberId,
+            unreadCount: conv.unreadCount ?? 0,
+            pinned: conv.pinned ?? false,
+            lastMessagePreview:
+              conv.lastMessagePreview ??
+              mappedMessages[mappedMessages.length - 1]?.content ??
+              "",
+            lastMessageAt:
+              conv.lastMessageAt ??
+              mappedMessages[mappedMessages.length - 1]?.sentAt ??
+              new Date().toISOString(),
+            messages: mappedMessages,
+          });
+        }
+
+        // Sort and set
+        convsWithMessages.sort(
+          (a, b) =>
+            new Date(b.lastMessageAt).getTime() -
+            new Date(a.lastMessageAt).getTime(),
+        );
+        setConversations(convsWithMessages);
+
+        // set initial active conversation
+        const firstId = convsWithMessages[0]?.id ?? "";
+        setActiveConversationId(firstId);
+        return;
+      } catch (e) {
+        console.error(`Error fetching chat data (attempt ${attempt})`, e);
+        await new Promise((r) => setTimeout(r, 500 * attempt));
+      }
+    }
+
+    console.error("Failed to fetch initial chat data after retries");
   }, []);
 
-  const handleSendMessage = useCallback(
-    (content: string) => {
-      const now = new Date().toISOString();
-      const id = `msg-${generateMessageId()}`;
-
-      setConversations((current) =>
-        current.map((conversation) => {
-          if (conversation.id !== activeConversationId) {
-            return conversation;
-          }
-
-          return {
-            ...conversation,
-            lastMessagePreview: content,
-            lastMessageAt: now,
-            unreadCount: 0,
-            messages: [
-              ...conversation.messages,
-              {
-                id,
-                authorId: "current-user",
-                content,
-                sentAt: now,
-                status: "sent" as const,
-              },
-            ],
-          };
-        }),
-      );
-    },
-    [activeConversationId],
-  );
-
-  const handleIncomingMessage = useCallback(
-    (
-      conversationId: string,
-      messageContent: string,
-      notificationDetails?: IncomingNotificationPayload,
-    ) => {
-      const sentAt = new Date().toISOString();
-      const messageId = `msg-${generateMessageId()}`;
-      let targetMemberId: string | undefined;
-
-      setConversations((current) =>
-        current.map((conversation) => {
-          if (conversation.id !== conversationId) {
-            return conversation;
-          }
-
-          targetMemberId = conversation.memberId;
-          const isActive = conversationId === activeConversationId;
-
-          return {
-            ...conversation,
-            unreadCount: isActive ? 0 : conversation.unreadCount + 1,
-            lastMessagePreview: messageContent,
-            lastMessageAt: sentAt,
-            messages: [
-              ...conversation.messages,
-              {
-                id: messageId,
-                authorId: conversation.memberId,
-                content: messageContent,
-                sentAt,
-                status: isActive ? ("read" as const) : ("delivered" as const),
-              },
-            ],
-          };
-        }),
-      );
-
-      if (notificationDetails && targetMemberId) {
-        const fullNotification: ChatNotification = {
-          id: `notif-${generateMessageId()}`,
-          createdAt: sentAt,
-          memberId: targetMemberId,
-          ...notificationDetails,
-        };
-
-        setNotifications((current) => [fullNotification, ...current]);
-        toast(fullNotification.title, {
-          description: fullNotification.description,
-        });
-      }
-
-      playNotificationSound();
-    },
-    [activeConversationId, playNotificationSound],
-  );
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
 
   useEffect(() => {
     return () => {
@@ -234,79 +204,148 @@ export function ChatLayout() {
     };
   }, []);
 
+  // Poll for new conversations/messages to show notifications and update unread counts
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
+    let mounted = true;
+    const interval = setInterval(async () => {
+      try {
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
+        const headers: any = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch("/api/chat/conversations", { headers });
+        if (!res.ok) return;
+        const convs = await res.json();
+        if (!mounted) return;
 
-    if (hasSimulatedMessageRef.current) {
-      return;
-    }
+        setConversations((current) => {
+          const next = [...current];
+          for (const conv of convs || []) {
+            const convId = getId(conv) ?? conv.id;
+            const existing = next.find((c) => c.id === convId);
+            if (!existing) {
+              // New conversation - fetch messages
+              (async () => {
+                const token = (() => {
+                  try {
+                    return localStorage.getItem("token");
+                  } catch {
+                    return null;
+                  }
+                })();
+                const headers: any = {};
+                if (token) headers.Authorization = `Bearer ${token}`;
+                const messagesRes = await fetch(
+                  `/api/chat/${convId}/messages`,
+                  { headers },
+                );
+                const msgs = messagesRes.ok ? await messagesRes.json() : [];
+                const mappedMessages: Message[] = (msgs || []).map(
+                  (m: any) => ({
+                    id: getId(m) ?? m.id,
+                    authorId: m.authorId,
+                    content: m.content,
+                    sentAt: m.sentAt,
+                    status: m.status ?? "delivered",
+                  }),
+                );
+                setConversations((cur) => {
+                  const merged = [
+                    ...cur,
+                    {
+                      id: convId,
+                      memberId:
+                        conv.memberId ??
+                        (Array.isArray(conv.memberIds)
+                          ? conv.memberIds[0]
+                          : undefined),
+                      unreadCount: conv.unreadCount ?? 0,
+                      pinned: conv.pinned ?? false,
+                      lastMessagePreview:
+                        conv.lastMessagePreview ??
+                        mappedMessages[mappedMessages.length - 1]?.content ??
+                        "",
+                      lastMessageAt:
+                        conv.lastMessageAt ??
+                        mappedMessages[mappedMessages.length - 1]?.sentAt ??
+                        new Date().toISOString(),
+                      messages: mappedMessages,
+                    },
+                  ];
+                  return merged.sort(
+                    (a, b) =>
+                      new Date(b.lastMessageAt).getTime() -
+                      new Date(a.lastMessageAt).getTime(),
+                  );
+                });
+              })();
+              continue;
+            }
 
-    hasSimulatedMessageRef.current = true;
-    const timer = window.setTimeout(() => {
-      handleIncomingMessage(
-        "conv-brian-carter",
-        "Heads up! The AI brief is ready for your review.",
-        {
-          title: "Brian pinged you with an update",
-          description: "“Heads up! The AI brief is ready for your review.”",
-          type: "mention",
-        },
-      );
-    }, 5200);
+            const newLast = conv.lastMessageAt ?? existing.lastMessageAt;
+            if (
+              new Date(newLast).getTime() >
+              new Date(existing.lastMessageAt).getTime()
+            ) {
+              // New message arrived
+              existing.lastMessageAt =
+                conv.lastMessageAt ?? existing.lastMessageAt;
+              existing.lastMessagePreview =
+                conv.lastMessagePreview ?? existing.lastMessagePreview;
+              existing.unreadCount = (existing.unreadCount || 0) + 1;
 
-    return () => window.clearTimeout(timer);
-  }, [handleIncomingMessage]);
+              // create notification
+              const noteId = `note-${generateMessageId()}`;
+              setNotifications((n) =>
+                [
+                  {
+                    id: noteId,
+                    type: "message",
+                    memberId: existing.memberId,
+                    title: "New message",
+                    description: existing.lastMessagePreview,
+                    createdAt: new Date().toISOString(),
+                  } as ChatNotification,
+                  ...n,
+                ].slice(0, 10),
+              );
 
-  const handleDismissNotification = useCallback((notificationId: string) => {
-    setNotifications((current) =>
-      current.filter((item) => item.id !== notificationId),
-    );
-  }, []);
-
-  const handleNotificationOpen = useCallback(
-    (notificationId: string, memberId: string | undefined) => {
-      setNotifications((current) =>
-        current.filter((item) => item.id !== notificationId),
-      );
-
-      if (!memberId) {
-        return;
-      }
-
-      let targetConversationId: string | undefined;
-      setConversations((current) =>
-        current.map((conversation) => {
-          if (conversation.memberId !== memberId) {
-            return conversation;
+              // play sound
+              playNotificationSound();
+            }
           }
 
-          targetConversationId = conversation.id;
-          return {
-            ...conversation,
-            unreadCount: 0,
-            messages: conversation.messages.map((message, index, array) => {
-              if (
-                index === array.length - 1 &&
-                message.authorId === conversation.memberId &&
-                message.status !== "read"
-              ) {
-                return { ...message, status: "read" as const };
-              }
-
-              return message;
-            }),
-          };
-        }),
-      );
-
-      if (targetConversationId) {
-        setActiveConversationId(targetConversationId);
+          return next.sort(
+            (a, b) =>
+              new Date(b.lastMessageAt).getTime() -
+              new Date(a.lastMessageAt).getTime(),
+          );
+        });
+      } catch (e) {
+        console.error("Polling chat failed", e);
       }
-    },
-    [],
+    }, 5000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [playNotificationSound]);
+
+  const activeConversation = useMemo(
+    () => conversations.find((c) => c.id === activeConversationId),
+    [conversations, activeConversationId],
   );
+
+  const activeMember = useMemo(() => {
+    if (!activeConversation) return undefined;
+    return members.find((m) => m.id === activeConversation.memberId);
+  }, [activeConversation, members]);
 
   const sortedConversations = useMemo(
     () =>
@@ -321,12 +360,109 @@ export function ChatLayout() {
     [conversations],
   );
 
+  const handleSelectConversation = useCallback((conversationId: string) => {
+    setActiveConversationId(conversationId);
+
+    // mark messages as read locally
+    setConversations((current) =>
+      current.map((conversation) =>
+        conversation.id !== conversationId
+          ? conversation
+          : {
+              ...conversation,
+              unreadCount: 0,
+              messages: conversation.messages.map((msg) => ({
+                ...msg,
+                status:
+                  msg.authorId === conversation.memberId ? "read" : msg.status,
+              })),
+            },
+      ),
+    );
+  }, []);
+
+  const handleSendMessage = useCallback(
+    async (content: string) => {
+      if (!activeConversation) return;
+      const now = new Date().toISOString();
+      const id = `msg-${generateMessageId()}`;
+
+      // Optimistic update
+      setConversations((current) =>
+        current.map((conversation) =>
+          conversation.id !== activeConversation.id
+            ? conversation
+            : {
+                ...conversation,
+                lastMessagePreview: content,
+                lastMessageAt: now,
+                unreadCount: 0,
+                messages: [
+                  ...conversation.messages,
+                  {
+                    id,
+                    authorId: "current-user",
+                    content,
+                    sentAt: now,
+                    status: "sent",
+                  },
+                ],
+              },
+        ),
+      );
+
+      try {
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
+        const res = await fetch(`/api/chat/${activeConversation.id}/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ authorId: "current-user", content }),
+        });
+
+        if (!res.ok) throw new Error("Failed to send");
+        const saved = await res.json();
+
+        // replace optimistic message id with real id from server
+        setConversations((current) =>
+          current.map((conversation) => {
+            if (conversation.id !== activeConversation.id) return conversation;
+            return {
+              ...conversation,
+              messages: conversation.messages.map((m) =>
+                m.id === id
+                  ? {
+                      ...m,
+                      id: getId(saved) ?? m.id,
+                      status: saved.status ?? "delivered",
+                    }
+                  : m,
+              ),
+            };
+          }),
+        );
+      } catch (e) {
+        console.error("Send failed", e);
+        toast("Failed to send message");
+      }
+    },
+    [activeConversation],
+  );
+
   if (!activeConversation || !activeMember) {
     return null;
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-6 lg:h-[calc(100vh-10rem)]">
+    <div className="flex flex-1 min-h-0 gap-6">
       <ChatSidebar
         members={members}
         conversations={sortedConversations}
@@ -342,8 +478,22 @@ export function ChatLayout() {
         <NotificationTray
           notifications={notifications.slice(0, 3)}
           members={members}
-          onOpenConversation={handleNotificationOpen}
-          onDismiss={handleDismissNotification}
+          onOpenConversation={(notificationId, memberId) => {
+            // open the associated conversation and remove notification
+            const conv = conversations.find((c) => c.memberId === memberId);
+            if (conv) {
+              setActiveConversationId(conv.id);
+              setConversations((current) =>
+                current.map((c) =>
+                  c.id === conv.id ? { ...c, unreadCount: 0 } : c,
+                ),
+              );
+            }
+            setNotifications((n) => n.filter((x) => x.id !== notificationId));
+          }}
+          onDismiss={(notificationId) =>
+            setNotifications((n) => n.filter((x) => x.id !== notificationId))
+          }
         />
       </div>
     </div>

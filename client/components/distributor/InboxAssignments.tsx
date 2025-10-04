@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
-import { teamChatData, type TeamMember } from "@/data/team-chat";
+import type { TeamMember } from "@/data/team-chat";
+import { useTeam } from "@/hooks/use-team";
 import {
   type DistributionAssignment,
   type DistributionRecord,
@@ -29,10 +30,8 @@ interface MemberInboxItem {
 export function InboxAssignments() {
   const { distributions } = useDistributor();
 
-  const memberMap = useMemo(
-    () => new Map(teamChatData.members.map((member) => [member.id, member])),
-    [],
-  );
+  const { members } = useTeam();
+  const memberMap = useMemo(() => new Map(members.map((member) => [member.id, member])), [members]);
 
   const membersWithAssignments = useMemo<MemberInboxItem[]>(() => {
     const entries = new Map<string, MemberInboxItem>();
