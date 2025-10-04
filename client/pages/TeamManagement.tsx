@@ -50,7 +50,7 @@ export default function TeamManagement() {
         setBusy(false);
         return;
       }
-      setName(''); setEmail(''); setPassword(''); setIsAdmin(false);
+      setName(''); setEmail(''); setPassword(''); setNewMemberIsAdmin(false);
       refresh();
     } catch (e) {
       console.error(e);
