@@ -4,6 +4,7 @@ import {
   Search,
   Settings,
   SunMedium,
+  LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
