@@ -7,7 +7,8 @@ const JWT_SECRET = process.env.JWT_SECRET || "dev_jwt_secret_change_me";
 
 export const register: RequestHandler = async (req, res) => {
   try {
-    const { name, email, password, role = "member", avatarUrl, location } =
+    // Every registering user becomes an admin of their own team
+    const { name, email, password, role = "admin", avatarUrl, location } =
       req.body ?? {};
 
     if (!email || !password || !name) {
@@ -36,6 +37,9 @@ export const register: RequestHandler = async (req, res) => {
       status: "online",
       createdAt: now,
     });
+
+    // set teamId to this user's own id
+    await users.updateOne({ _id: result.insertedId }, { $set: { teamId: String(result.insertedId) } });
 
     const user = await users.findOne({ _id: result.insertedId });
 
