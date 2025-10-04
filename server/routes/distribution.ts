@@ -1,13 +1,11 @@
-import { RequestHandler } from "express";
 import { getCollection } from "../lib/mongo";
-
 import { ObjectId } from "mongodb";
 
 export const listDistributions: RequestHandler = async (req, res) => {
   try {
     const col = await getCollection("distributions");
     const users = await getCollection('users');
-    const requesterId = req.userId;
+    const requesterId = (req as any).userId;
     if (!requesterId) { res.status(401).json({ message: 'Not authenticated' }); return; }
     const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
     // super-admin sees all
@@ -29,7 +27,7 @@ export const listDistributions: RequestHandler = async (req, res) => {
 export const createDistribution: RequestHandler = async (req, res) => {
   try {
     const users = await getCollection('users');
-    const requesterId = req.userId;
+    const requesterId = (req as any).userId;
     if (!requesterId) { res.status(401).json({ message: 'Not authenticated' }); return; }
     const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
     if (!requester || !(requester.role === 'admin' || requester.role === 'Admin' || requester.role === 'super-admin' || requester.role === 'Super-Admin')) {
@@ -66,13 +64,6 @@ export const createDistribution: RequestHandler = async (req, res) => {
     const createdDoc = { title, items: lines, assignments, cadence, intervalSeconds, teamId, createdAt: now };
     const r = await col.insertOne(createdDoc);
     const created = await col.findOne({ _id: r.insertedId });
-
-    // Optionally: create a conversation or message entries for each assignee so inbox shows notification
-    const convs = await getCollection('conversations');
-    for (const a of assignments) {
-      // create a dedicated distribution conversation id or link - here we store distribution reference only
-      // leave creation of messages to clients polling /api/distributions
-    }
 
     res.json(created);
   } catch (e: any) {
