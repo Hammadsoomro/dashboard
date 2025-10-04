@@ -82,9 +82,14 @@ export const createMember: RequestHandler = async (req, res) => {
       return;
     }
 
+    // determine team of requesting admin
+    const requesterId = req.userId;
+    const requester = requesterId ? await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() }) : null;
+    const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
+
     const passwordHash = await bcrypt.hash(password, 10);
     const now = new Date().toISOString();
-    const result = await users.insertOne({ name, email, role, avatarUrl: avatarUrl ?? null, location: location ?? null, status, passwordHash, createdAt: now });
+    const result = await users.insertOne({ name, email, role, avatarUrl: avatarUrl ?? null, location: location ?? null, status, passwordHash, createdAt: now, teamId });
     const user = await users.findOne({ _id: result.insertedId });
     const { passwordHash: _ph, ...rest } = user as any;
     res.json(rest);
