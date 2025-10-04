@@ -36,7 +36,7 @@ export default function TeamManagement() {
       const res = await fetch('/api/team', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ name, email, password, role: isAdmin ? 'admin' : 'member' }),
+        body: JSON.stringify({ name, email, password, role: newMemberIsAdmin ? 'admin' : 'member' }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
