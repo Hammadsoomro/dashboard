@@ -143,11 +143,20 @@ export function DistributorProvider({ children }: { children: ReactNode }) {
             }
           } catch (e) { console.error('Notification failed', e); }
 
-          // play sound
+          // play sound via WebAudio API
           try {
-            const audio = new Audio('/notification.mp3');
-            audio.volume = 1.0;
-            audio.play().catch(()=>{});
+            if (typeof window !== 'undefined' && 'AudioContext' in window) {
+              const ac = new (window.AudioContext || (window as any).webkitAudioContext)();
+              const o = ac.createOscillator();
+              const g = ac.createGain();
+              o.type = 'sine';
+              o.frequency.value = 880;
+              g.gain.value = 0.1;
+              o.connect(g);
+              g.connect(ac.destination);
+              o.start();
+              setTimeout(() => { o.stop(); try { ac.close(); } catch {} }, 600);
+            }
           } catch (e) { console.error(e); }
         }
       }
