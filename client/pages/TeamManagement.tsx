@@ -9,6 +9,20 @@ export default function TeamManagement() {
   const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        if (!token) return;
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const data = await res.json();
+        setIsAdmin((data?.role || '').toLowerCase() === 'admin' || (data?.role || '').toLowerCase() === 'super-admin');
+      } catch (e) { console.error(e); }
+    })();
+  }, []);
 
   const refresh = () => {
     window.location.reload();
