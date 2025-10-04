@@ -54,6 +54,18 @@ export const getMember: RequestHandler = async (req, res) => {
       res.status(404).json({ message: "Not found" });
       return;
     }
+
+    // only allow if requester is in same team
+    const requesterId = req.userId;
+    if (requesterId) {
+      const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
+      const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
+      if (String(user.teamId) !== String(teamId)) {
+        res.status(403).json({ message: 'Forbidden' });
+        return;
+      }
+    }
+
     res.json(user);
   } catch (e: any) {
     console.error(e);
