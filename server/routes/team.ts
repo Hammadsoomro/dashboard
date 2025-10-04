@@ -20,8 +20,16 @@ async function isRequestingUserAdmin(req: any) {
 export const listTeam: RequestHandler = async (req, res) => {
   try {
     const users = await getCollection("users");
+    // Only return members of the requesting user's team. requireAuth should have set req.userId
+    const requesterId = req.userId;
+    if (!requesterId) {
+      res.status(401).json({ message: 'Not authenticated' });
+      return;
+    }
+    const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
+    const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
     const docs = await users
-      .find({}, { projection: { passwordHash: 0 } })
+      .find({ teamId }, { projection: { passwordHash: 0 } })
       .sort({ createdAt: -1 })
       .toArray();
     res.json(docs);
