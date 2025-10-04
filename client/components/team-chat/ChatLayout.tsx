@@ -305,9 +305,10 @@ export function ChatLayout() {
     );
 
     try {
+      const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
       const res = await fetch(`/api/chat/${activeConversation.id}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ authorId: 'current-user', content }),
       });
 
