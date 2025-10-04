@@ -38,7 +38,7 @@ interface DistributorContextValue {
     linesPerMember: number;
     intervalSeconds: number;
     memberIds: string[];
-  }) => DistributionRecord;
+  }) => Promise<DistributionRecord>;
   clearDistributions: () => void;
 }
 
