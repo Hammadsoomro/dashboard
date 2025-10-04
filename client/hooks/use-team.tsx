@@ -22,7 +22,10 @@ export function useTeam() {
       for (let i = 0; i < urls.length; i++) {
         const url = urls[i];
         try {
-          const res = await fetch(url, { cache: 'no-store' });
+          const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+          const headers: any = { 'Cache-Control': 'no-store' };
+          if (token) headers.Authorization = `Bearer ${token}`;
+          const res = await fetch(url, { headers });
           if (!res.ok) {
             const text = await res.text().catch(() => '<no-body>');
             console.error(`useTeam: fetch ${url} returned ${res.status}`, text);
