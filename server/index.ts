@@ -42,7 +42,9 @@ export function createServer() {
   // Auth
   app.post("/api/auth/register", register);
   app.post("/api/auth/login", login);
+  app.post("/api/auth/register", register);
   app.get("/api/auth/me", requireAuth, me);
+  app.post("/api/auth/update", requireAuth, updateProfile);
 
   // Team members (per-admin teams)
   app.get("/api/team", requireAuth, listTeam);
