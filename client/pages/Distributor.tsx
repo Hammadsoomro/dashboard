@@ -1,8 +1,23 @@
 import AppShell from "@/components/layout/AppShell";
+import { useEffect, useState } from "react";
 import { DistributionHistory } from "@/components/distributor/DistributionHistory";
 import { DistributorComposer } from "@/components/distributor/DistributorComposer";
 
 export default function Distributor() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        if (!token) return;
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const data = await res.json();
+        setIsAdmin((data?.role || '').toLowerCase() === 'admin' || (data?.role || '').toLowerCase() === 'super-admin');
+      } catch (e) { console.error(e); }
+    })();
+  }, []);
+
   return (
     <AppShell>
       <div className="space-y-8 pb-12">
@@ -14,7 +29,7 @@ export default function Distributor() {
           </p>
         </header>
         <section aria-label="Distributor composer">
-          <DistributorComposer />
+          {isAdmin ? <DistributorComposer /> : <div className="rounded-md border p-6 text-sm text-muted-foreground">Only team admins can create distributions.</div> }
         </section>
         <section aria-label="Distribution history">
           <DistributionHistory />
