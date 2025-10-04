@@ -7,7 +7,7 @@ export default function TeamManagement() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [newMemberIsAdmin, setNewMemberIsAdmin] = useState(false);
   const [busy, setBusy] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
