@@ -119,12 +119,28 @@ export const deleteMember: RequestHandler = async (req, res) => {
     }
     const { id } = req.params;
     const users = await getCollection("users");
+
+    // ensure target is in same team as requester
+    const requesterId = req.userId;
+    const requester = await users.findOne({ _id: (() => { try { return new ObjectId(requesterId); } catch { return requesterId; } })() });
+    const teamId = requester?.teamId ?? String(requester?._id ?? requesterId);
+
     let query: any;
     try {
       query = { _id: new ObjectId(id) };
     } catch {
       query = { _id: id };
     }
+    const target = await users.findOne(query);
+    if (!target) {
+      res.status(404).json({ message: 'Not found' });
+      return;
+    }
+    if (String(target.teamId) !== String(teamId)) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
+
     await users.deleteOne(query);
     res.json({ success: true });
   } catch (e: any) {
