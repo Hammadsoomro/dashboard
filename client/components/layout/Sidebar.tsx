@@ -85,6 +85,37 @@ export default function Sidebar({
   const timeString = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
   const dateString = now.toLocaleDateString();
 
+  // compute unread inbox count for current user
+  const [unreadInbox, setUnreadInbox] = useState<number>(0);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        if (!token) return;
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const me = await res.json();
+        const userId = me._id?.$oid ?? (me._id ? String(me._id) : me.id ?? me.email);
+        const distRes = await fetch('/api/distributions', { headers: { Authorization: `Bearer ${token}` } });
+        if (!distRes.ok) return;
+        const dists = await distRes.json();
+        const seenKey = `readDistributions:${userId}`;
+        const seen = new Set<string>(JSON.parse(localStorage.getItem(seenKey) || '[]'));
+        let count = 0;
+        for (const d of dists) {
+          const id = d._id?.$oid ?? (d._id ? String(d._id) : d.id);
+          if (seen.has(id)) continue;
+          const assignments = d.assignments || [];
+          const match = assignments.find((a:any) => String(a.memberId) === String(userId));
+          if (match && match.lines && match.lines.length) count += match.lines.length;
+        }
+        if (mounted) setUnreadInbox(count);
+      } catch (e) { console.error(e); }
+    })();
+    return () => { mounted = false; };
+  }, [user]);
+
   return (
     <aside
       className={cn(
