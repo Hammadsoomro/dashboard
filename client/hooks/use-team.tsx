@@ -36,6 +36,7 @@ export function useTeam() {
           const mapped = (data || []).map((u: any) => ({
             id: u._id?.$oid ?? (u._id ? String(u._id) : u.email ?? u.id),
             name: u.name,
+            email: u.email ?? undefined,
             role: u.role ?? 'member',
             status: u.status ?? 'online',
             location: u.location ?? '',
