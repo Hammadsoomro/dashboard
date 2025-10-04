@@ -66,24 +66,29 @@ export function DistributorComposer() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!dedupedLines.length || !selectedMemberIds.length) {
       return;
     }
 
-    const record = addDistribution({
-      lines: dedupedLines,
-      linesPerMember,
-      intervalSeconds,
-      memberIds: selectedMemberIds,
-    });
+    try {
+      const record = await addDistribution({
+        lines: dedupedLines,
+        linesPerMember,
+        intervalSeconds,
+        memberIds: selectedMemberIds,
+      });
 
-    toast({
-      title: "Distribution scheduled",
-      description: `${record.lines.length} unique lines will start rolling out every ${record.intervalSeconds} seconds.`,
-    });
+      toast({
+        title: "Distribution scheduled",
+        description: `${record.lines.length} unique lines will start rolling out every ${record.intervalSeconds} seconds.`,
+      });
 
-    setInputValue("");
+      setInputValue("");
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: 'Failed to schedule distribution', description: e?.message || String(e) });
+    }
   };
 
   const isSubmitDisabled =
