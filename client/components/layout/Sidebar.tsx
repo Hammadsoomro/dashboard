@@ -64,14 +64,15 @@ export default function Sidebar({
           { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
           { label: "Team Chat", icon: MessageSquareMore, to: "/team-chat" },
           { label: "Inbox", icon: Mail, to: "/inbox" },
-          { label: "Distributor", icon: Truck, to: "/distributor" },
+          // Distributor only visible to admins
+          ...(user.role && (user.role.toLowerCase() === 'admin' || user.role.toLowerCase() === 'super-admin') ? [{ label: "Distributor", icon: Truck, to: "/distributor" }] : []),
           { label: "Sales Tracker", icon: LineChart, to: "/sales-tracker" },
           { label: "Team Management", icon: Users2, to: "/team-management" },
           { label: "Setting", icon: Settings, to: "/settings" },
         ],
       },
     ],
-    [],
+    [user.role],
   );
 
   // Live time display
