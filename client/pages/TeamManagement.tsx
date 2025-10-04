@@ -78,27 +78,31 @@ export default function TeamManagement() {
         <h1 className="text-2xl font-semibold">Team Management</h1>
         <p className="text-muted-foreground mt-2">Create and manage team members.</p>
 
-        <form onSubmit={handleCreate} className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className="block text-sm font-medium">Name</label>
-            <input required value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Email</label>
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Password</label>
-            <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
-          </div>
-          <div className="sm:col-span-2 flex items-center gap-3">
-            <input id="isAdmin" type="checkbox" checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />
-            <label htmlFor="isAdmin" className="text-sm">Make admin</label>
-          </div>
-          <div className="sm:col-span-2">
-            <button disabled={busy} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-white">Create new team member</button>
-          </div>
-        </form>
+        {isAdmin ? (
+          <form onSubmit={handleCreate} className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium">Name</label>
+              <input required value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Email</label>
+              <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Password</label>
+              <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full rounded-md border px-3 py-2" />
+            </div>
+            <div className="sm:col-span-2 flex items-center gap-3">
+              <input id="isAdmin" type="checkbox" checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />
+              <label htmlFor="isAdmin" className="text-sm">Make admin</label>
+            </div>
+            <div className="sm:col-span-2">
+              <button disabled={busy} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-white">Create new team member</button>
+            </div>
+          </form>
+        ) : (
+          <p className="mt-6 text-sm text-muted-foreground">Only team admins can create new team members.</p>
+        )}
 
         <section className="mt-8">
           <h2 className="text-lg font-semibold">Team members</h2>
@@ -114,7 +118,9 @@ export default function TeamManagement() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs px-2 py-1 rounded-md border">{m.role}</span>
-                    <button onClick={() => handleDelete(m.id)} disabled={busy} className="text-sm text-red-600">Delete</button>
+                    {isAdmin ? (
+                      <button onClick={() => handleDelete(m.id)} disabled={busy} className="text-sm text-red-600">Delete</button>
+                    ) : null}
                   </div>
                 </li>
               ))}
