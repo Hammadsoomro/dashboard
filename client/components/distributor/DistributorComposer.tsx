@@ -41,8 +41,8 @@ export function DistributorComposer() {
     () => members.filter((member) => member.status === "online"),
     [members],
   );
-  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(
-    () => onlineMembers.map((member) => member.id),
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() =>
+    onlineMembers.map((member) => member.id),
   );
   const [linesPerMember, setLinesPerMember] = useState<number>(
     LINES_PER_MEMBER_OPTIONS[1],
@@ -87,7 +87,10 @@ export function DistributorComposer() {
       setInputValue("");
     } catch (e: any) {
       console.error(e);
-      toast({ title: 'Failed to schedule distribution', description: e?.message || String(e) });
+      toast({
+        title: "Failed to schedule distribution",
+        description: e?.message || String(e),
+      });
     }
   };
 

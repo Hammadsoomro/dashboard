@@ -65,7 +65,11 @@ export default function Sidebar({
           { label: "Team Chat", icon: MessageSquareMore, to: "/team-chat" },
           { label: "Inbox", icon: Mail, to: "/inbox" },
           // Distributor only visible to admins
-          ...(user.role && (user.role.toLowerCase() === 'admin' || user.role.toLowerCase() === 'super-admin') ? [{ label: "Distributor", icon: Truck, to: "/distributor" }] : []),
+          ...(user.role &&
+          (user.role.toLowerCase() === "admin" ||
+            user.role.toLowerCase() === "super-admin")
+            ? [{ label: "Distributor", icon: Truck, to: "/distributor" }]
+            : []),
           { label: "Sales Tracker", icon: LineChart, to: "/sales-tracker" },
           { label: "Team Management", icon: Users2, to: "/team-management" },
           { label: "Setting", icon: Settings, to: "/settings" },
@@ -82,7 +86,11 @@ export default function Sidebar({
     return () => clearInterval(t);
   }, []);
 
-  const timeString = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+  const timeString = now.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  });
   const dateString = now.toLocaleDateString();
 
   // compute unread inbox count for current user
@@ -91,29 +99,49 @@ export default function Sidebar({
     let mounted = true;
     (async () => {
       try {
-        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
         if (!token) return;
-        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) return;
         const me = await res.json();
-        const userId = me._id?.$oid ?? (me._id ? String(me._id) : me.id ?? me.email);
-        const distRes = await fetch('/api/distributions', { headers: { Authorization: `Bearer ${token}` } });
+        const userId =
+          me._id?.$oid ?? (me._id ? String(me._id) : (me.id ?? me.email));
+        const distRes = await fetch("/api/distributions", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!distRes.ok) return;
         const dists = await distRes.json();
         const seenKey = `readDistributions:${userId}`;
-        const seen = new Set<string>(JSON.parse(localStorage.getItem(seenKey) || '[]'));
+        const seen = new Set<string>(
+          JSON.parse(localStorage.getItem(seenKey) || "[]"),
+        );
         let count = 0;
         for (const d of dists) {
           const id = d._id?.$oid ?? (d._id ? String(d._id) : d.id);
           if (seen.has(id)) continue;
           const assignments = d.assignments || [];
-          const match = assignments.find((a:any) => String(a.memberId) === String(userId));
-          if (match && match.lines && match.lines.length) count += match.lines.length;
+          const match = assignments.find(
+            (a: any) => String(a.memberId) === String(userId),
+          );
+          if (match && match.lines && match.lines.length)
+            count += match.lines.length;
         }
         if (mounted) setUnreadInbox(count);
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error(e);
+      }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [user]);
 
   return (
@@ -150,7 +178,14 @@ export default function Sidebar({
           </button>
         </div>
 
-        <div className={cn("mb-6 flex w-full items-center rounded-2xl px-4 py-3 transition", collapsed ? "justify-center" : "bg-gradient-to-r from-emerald-400 via-sky-400 to-indigo-500 text-white")}>
+        <div
+          className={cn(
+            "mb-6 flex w-full items-center rounded-2xl px-4 py-3 transition",
+            collapsed
+              ? "justify-center"
+              : "bg-gradient-to-r from-emerald-400 via-sky-400 to-indigo-500 text-white",
+          )}
+        >
           {!collapsed ? (
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-3">
@@ -163,13 +198,18 @@ export default function Sidebar({
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-lg font-mono font-semibold">{timeString}</div>
+                <div className="text-lg font-mono font-semibold">
+                  {timeString}
+                </div>
                 <div className="text-xs opacity-80">Local time</div>
               </div>
             </div>
           ) : (
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 via-sky-400 to-indigo-500 text-white">
-              <div className="text-xs font-mono">{now.getHours().toString().padStart(2,'0')}:{now.getMinutes().toString().padStart(2,'0')}</div>
+              <div className="text-xs font-mono">
+                {now.getHours().toString().padStart(2, "0")}:
+                {now.getMinutes().toString().padStart(2, "0")}
+              </div>
             </div>
           )}
         </div>
@@ -186,7 +226,7 @@ export default function Sidebar({
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.to;
-                  const isInbox = item.to === '/inbox';
+                  const isInbox = item.to === "/inbox";
                   const content = (
                     <div
                       className={cn(
@@ -205,7 +245,7 @@ export default function Sidebar({
 
                       {!collapsed && isInbox && (
                         <span className="inline-flex items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">
-                          {unreadInbox > 0 ? unreadInbox : ''}
+                          {unreadInbox > 0 ? unreadInbox : ""}
                         </span>
                       )}
                     </div>

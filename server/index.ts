@@ -6,7 +6,12 @@ import { createLead, listLeads } from "./routes/mongo";
 import { register, login, me, updateProfile } from "./routes/auth";
 import { requireAuth } from "./middleware/auth";
 import { listTeam, createMember, getMember, deleteMember } from "./routes/team";
-import { listConversations, getMessages, postMessage, createConversation } from "./routes/chat";
+import {
+  listConversations,
+  getMessages,
+  postMessage,
+  createConversation,
+} from "./routes/chat";
 import { listDistributions, createDistribution } from "./routes/distribution";
 import { listSales, getSalesForUser, upsertSales } from "./routes/sales";
 
@@ -27,10 +32,10 @@ export function createServer() {
   app.get("/api/demo", handleDemo);
 
   // Debug route to inspect important env vars
-  app.get('/api/debug/env', (_req, res) => {
+  app.get("/api/debug/env", (_req, res) => {
     res.json({
       hasMongo: !!process.env.MONGODB_URI,
-      mongo: process.env.MONGODB_URI ? '[redacted]' : null,
+      mongo: process.env.MONGODB_URI ? "[redacted]" : null,
       jwt: !!process.env.JWT_SECRET,
     });
   });
@@ -62,9 +67,9 @@ export function createServer() {
   app.post("/api/distributions", requireAuth, createDistribution);
 
   // Sales
-  app.get('/api/sales', listSales);
-  app.get('/api/sales/:userId', getSalesForUser);
-  app.post('/api/sales/:userId', requireAuth, upsertSales);
+  app.get("/api/sales", listSales);
+  app.get("/api/sales/:userId", getSalesForUser);
+  app.post("/api/sales/:userId", requireAuth, upsertSales);
 
   return app;
 }

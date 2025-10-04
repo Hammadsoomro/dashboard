@@ -52,7 +52,12 @@ export default function TopNav() {
             )}
           </button>
           <button
-            onClick={() => { try { localStorage.removeItem('token'); } catch {} ; navigate('/login'); }}
+            onClick={() => {
+              try {
+                localStorage.removeItem("token");
+              } catch {}
+              navigate("/login");
+            }}
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white text-neutral-600 shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-neutral-200"
             aria-label="Logout"
           >

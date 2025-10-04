@@ -9,11 +9,11 @@ export function useTeam() {
     let mounted = true;
     setLoading(true);
 
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
     const urls = [
-      '/api/team',
+      "/api/team",
       `${origin}/api/team`,
-      `${origin.replace(/^https?:\/\//, 'https://')}/api/team`,
+      `${origin.replace(/^https?:\/\//, "https://")}/api/team`,
     ];
 
     let aborted = false;
@@ -22,24 +22,30 @@ export function useTeam() {
       for (let i = 0; i < urls.length; i++) {
         const url = urls[i];
         try {
-          const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
-          const headers: any = { 'Cache-Control': 'no-store' };
+          const token = (() => {
+            try {
+              return localStorage.getItem("token");
+            } catch {
+              return null;
+            }
+          })();
+          const headers: any = { "Cache-Control": "no-store" };
           if (token) headers.Authorization = `Bearer ${token}`;
           const res = await fetch(url, { headers });
           if (!res.ok) {
-            const text = await res.text().catch(() => '<no-body>');
+            const text = await res.text().catch(() => "<no-body>");
             console.error(`useTeam: fetch ${url} returned ${res.status}`, text);
             continue;
           }
           const data = await res.json();
           if (!mounted || aborted) return;
           const mapped = (data || []).map((u: any) => ({
-            id: u._id?.$oid ?? (u._id ? String(u._id) : u.email ?? u.id),
+            id: u._id?.$oid ?? (u._id ? String(u._id) : (u.email ?? u.id)),
             name: u.name,
             email: u.email ?? undefined,
-            role: u.role ?? 'member',
-            status: u.status ?? 'online',
-            location: u.location ?? '',
+            role: u.role ?? "member",
+            status: u.status ?? "online",
+            location: u.location ?? "",
             avatarUrl: u.avatarUrl ?? undefined,
           }));
           setMembers(mapped);
@@ -52,7 +58,7 @@ export function useTeam() {
       }
 
       if (!aborted) {
-        console.error('useTeam: all fetch attempts failed');
+        console.error("useTeam: all fetch attempts failed");
         setLoading(false);
       }
     };

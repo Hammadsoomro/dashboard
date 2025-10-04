@@ -8,13 +8,26 @@ export default function Distributor() {
   useEffect(() => {
     (async () => {
       try {
-        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
         if (!token) return;
-        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) return;
         const data = await res.json();
-        setIsAdmin((data?.role || '').toLowerCase() === 'admin' || (data?.role || '').toLowerCase() === 'super-admin');
-      } catch (e) { console.error(e); }
+        setIsAdmin(
+          (data?.role || "").toLowerCase() === "admin" ||
+            (data?.role || "").toLowerCase() === "super-admin",
+        );
+      } catch (e) {
+        console.error(e);
+      }
     })();
   }, []);
 
@@ -29,7 +42,13 @@ export default function Distributor() {
           </p>
         </header>
         <section aria-label="Distributor composer">
-          {isAdmin ? <DistributorComposer /> : <div className="rounded-md border p-6 text-sm text-muted-foreground">Only team admins can create distributions.</div> }
+          {isAdmin ? (
+            <DistributorComposer />
+          ) : (
+            <div className="rounded-md border p-6 text-sm text-muted-foreground">
+              Only team admins can create distributions.
+            </div>
+          )}
         </section>
         <section aria-label="Distribution history">
           <DistributionHistory />

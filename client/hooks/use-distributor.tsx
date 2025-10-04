@@ -93,77 +93,132 @@ export function DistributorProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
         if (!token) return;
-        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) return;
         const data = await res.json();
-        setCurrentUserId(data._id?.$oid ?? (data._id ? String(data._id) : data.id ?? data.email));
-      } catch (e) { console.error(e); }
+        setCurrentUserId(
+          data._id?.$oid ??
+            (data._id ? String(data._id) : (data.id ?? data.email)),
+        );
+      } catch (e) {
+        console.error(e);
+      }
     })();
   }, []);
 
   const fetchDistributions = useCallback(async () => {
     try {
-      const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+      const token = (() => {
+        try {
+          return localStorage.getItem("token");
+        } catch {
+          return null;
+        }
+      })();
       if (!token) return;
-      const res = await fetch('/api/distributions', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch("/api/distributions", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) return;
       const data: any[] = await res.json();
-      setDistributions(data.map((d:any) => ({
-        id: d._id?.$oid ?? (d._id ? String(d._id) : d.id),
-        createdAt: d.createdAt,
-        lines: d.items ?? d.lines ?? [],
-        linesPerMember: d.linesPerMember ?? 1,
-        intervalSeconds: d.intervalSeconds ?? 1,
-        memberIds: d.assignments ? d.assignments.map((a:any)=>a.memberId) : (d.memberIds || []),
-        assignments: d.assignments?.map((a:any)=>({ memberId: a.memberId, lines: a.lines })) || [],
-      })));
+      setDistributions(
+        data.map((d: any) => ({
+          id: d._id?.$oid ?? (d._id ? String(d._id) : d.id),
+          createdAt: d.createdAt,
+          lines: d.items ?? d.lines ?? [],
+          linesPerMember: d.linesPerMember ?? 1,
+          intervalSeconds: d.intervalSeconds ?? 1,
+          memberIds: d.assignments
+            ? d.assignments.map((a: any) => a.memberId)
+            : d.memberIds || [],
+          assignments:
+            d.assignments?.map((a: any) => ({
+              memberId: a.memberId,
+              lines: a.lines,
+            })) || [],
+        })),
+      );
 
       // notify current user for new assignments
       const userId = currentUserId;
       if (!userId) return;
 
       const key = `readDistributions:${userId}`;
-      const seen = new Set<string>(JSON.parse(localStorage.getItem(key) || '[]'));
+      const seen = new Set<string>(
+        JSON.parse(localStorage.getItem(key) || "[]"),
+      );
 
       for (const d of data) {
         const id = d._id?.$oid ?? (d._id ? String(d._id) : d.id);
         if (seen.has(id)) continue;
         // check if current user has assignment
         const assignments = d.assignments || [];
-        const match = assignments.find((a:any) => String(a.memberId) === String(userId));
+        const match = assignments.find(
+          (a: any) => String(a.memberId) === String(userId),
+        );
         if (match && match.lines && match.lines.length) {
           // show notification
           try {
-            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-              new Notification('New lines received', { body: `${match.lines.length} new line${match.lines.length===1?'':'s'} assigned` });
-            } else if (typeof Notification !== 'undefined' && Notification.permission !== 'denied') {
+            if (
+              typeof Notification !== "undefined" &&
+              Notification.permission === "granted"
+            ) {
+              new Notification("New lines received", {
+                body: `${match.lines.length} new line${match.lines.length === 1 ? "" : "s"} assigned`,
+              });
+            } else if (
+              typeof Notification !== "undefined" &&
+              Notification.permission !== "denied"
+            ) {
               Notification.requestPermission().then((perm) => {
-                if (perm === 'granted') new Notification('New lines received', { body: `${match.lines.length} new line${match.lines.length===1?'':'s'} assigned` });
+                if (perm === "granted")
+                  new Notification("New lines received", {
+                    body: `${match.lines.length} new line${match.lines.length === 1 ? "" : "s"} assigned`,
+                  });
               });
             }
-          } catch (e) { console.error('Notification failed', e); }
+          } catch (e) {
+            console.error("Notification failed", e);
+          }
 
           // play sound via WebAudio API
           try {
-            if (typeof window !== 'undefined' && 'AudioContext' in window) {
-              const ac = new (window.AudioContext || (window as any).webkitAudioContext)();
+            if (typeof window !== "undefined" && "AudioContext" in window) {
+              const ac = new (window.AudioContext ||
+                (window as any).webkitAudioContext)();
               const o = ac.createOscillator();
               const g = ac.createGain();
-              o.type = 'sine';
+              o.type = "sine";
               o.frequency.value = 880;
               g.gain.value = 0.1;
               o.connect(g);
               g.connect(ac.destination);
               o.start();
-              setTimeout(() => { o.stop(); try { ac.close(); } catch {} }, 600);
+              setTimeout(() => {
+                o.stop();
+                try {
+                  ac.close();
+                } catch {}
+              }, 600);
             }
-          } catch (e) { console.error(e); }
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
-
-    } catch (e) { console.error('Failed fetching distributions', e); }
+    } catch (e) {
+      console.error("Failed fetching distributions", e);
+    }
   }, [currentUserId]);
 
   useEffect(() => {
@@ -177,25 +232,57 @@ export function DistributorProvider({ children }: { children: ReactNode }) {
   >(async ({ lines, linesPerMember, intervalSeconds, memberIds }) => {
     // POST to server
     try {
-      const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
-      if (!token) throw new Error('Not authenticated');
-      const payload = { title: 'Distribution', items: lines, linesPerMember, intervalSeconds, assignees: memberIds } as any;
-      const res = await fetch('/api/distributions', { method: 'POST', headers: { 'Content-Type':'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
-      if (!res.ok) { const b = await res.json().catch(()=>({})); throw new Error(b.message || 'Failed to create'); }
+      const token = (() => {
+        try {
+          return localStorage.getItem("token");
+        } catch {
+          return null;
+        }
+      })();
+      if (!token) throw new Error("Not authenticated");
+      const payload = {
+        title: "Distribution",
+        items: lines,
+        linesPerMember,
+        intervalSeconds,
+        assignees: memberIds,
+      } as any;
+      const res = await fetch("/api/distributions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const b = await res.json().catch(() => ({}));
+        throw new Error(b.message || "Failed to create");
+      }
       const created = await res.json();
       // map server doc to DistributionRecord
       const record: DistributionRecord = {
-        id: created._id?.$oid ?? (created._id ? String(created._id) : created.id),
+        id:
+          created._id?.$oid ?? (created._id ? String(created._id) : created.id),
         createdAt: created.createdAt,
         lines: created.items ?? created.lines ?? [],
         linesPerMember: created.linesPerMember ?? linesPerMember,
         intervalSeconds: created.intervalSeconds ?? intervalSeconds,
-        memberIds: created.assignments ? created.assignments.map((a:any)=>a.memberId) : (created.memberIds || []),
-        assignments: created.assignments?.map((a:any)=>({ memberId: a.memberId, lines: a.lines })) || [],
+        memberIds: created.assignments
+          ? created.assignments.map((a: any) => a.memberId)
+          : created.memberIds || [],
+        assignments:
+          created.assignments?.map((a: any) => ({
+            memberId: a.memberId,
+            lines: a.lines,
+          })) || [],
       };
       setDistributions((cur) => [record, ...cur]);
       return record;
-    } catch (e) { console.error(e); throw e; }
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
   }, []);
 
   const clearDistributions = useCallback(() => {

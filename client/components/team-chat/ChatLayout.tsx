@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import type { TeamMember, Conversation, ChatNotification, Message } from "@/data/team-chat";
+import type {
+  TeamMember,
+  Conversation,
+  ChatNotification,
+  Message,
+} from "@/data/team-chat";
 import { ChatSidebar } from "./ChatSidebar";
 import { ChatConversation } from "./ChatConversation";
 import { NotificationTray } from "./NotificationTray";
@@ -88,18 +93,27 @@ export function ChatLayout() {
     while (attempt < maxRetries) {
       attempt += 1;
       try {
-        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
         const [teamRes, convRes] = await Promise.all([
-          fetch('/api/team', { headers }),
-          fetch('/api/chat/conversations', { headers }),
+          fetch("/api/team", { headers }),
+          fetch("/api/chat/conversations", { headers }),
         ]);
 
         if (!teamRes.ok || !convRes.ok) {
           const teamText = await teamRes.text().catch(() => "<no-body>");
           const convText = await convRes.text().catch(() => "<no-body>");
-          console.error(`Failed to fetch initial chat data (attempt ${attempt}): teamRes=${teamRes.status}, convRes=${convRes.status}`, { teamText, convText });
+          console.error(
+            `Failed to fetch initial chat data (attempt ${attempt}): teamRes=${teamRes.status}, convRes=${convRes.status}`,
+            { teamText, convText },
+          );
           // wait before retrying
           await new Promise((r) => setTimeout(r, 500 * attempt));
           continue;
@@ -112,9 +126,9 @@ export function ChatLayout() {
           (team || []).map((u: any) => ({
             id: getId(u) ?? u.email,
             name: u.name,
-            role: u.role ?? 'member',
-            status: u.status ?? 'online',
-            location: u.location ?? '',
+            role: u.role ?? "member",
+            status: u.status ?? "online",
+            location: u.location ?? "",
             avatarUrl: u.avatarUrl ?? undefined,
           })),
         );
@@ -124,7 +138,9 @@ export function ChatLayout() {
 
         for (const conv of convs || []) {
           const convId = getId(conv) ?? conv.id;
-          const messagesRes = await fetch(`/api/chat/${convId}/messages`, { headers });
+          const messagesRes = await fetch(`/api/chat/${convId}/messages`, {
+            headers,
+          });
           const msgs = messagesRes.ok ? await messagesRes.json() : [];
 
           const mappedMessages: Message[] = (msgs || []).map((m: any) => ({
@@ -132,29 +148,41 @@ export function ChatLayout() {
             authorId: m.authorId,
             content: m.content,
             sentAt: m.sentAt,
-            status: m.status ?? 'delivered',
+            status: m.status ?? "delivered",
           }));
 
           // Determine memberId for UI (for 1:1 chats use first member id)
-          const memberId = conv.memberId ?? (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined);
+          const memberId =
+            conv.memberId ??
+            (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined);
 
           convsWithMessages.push({
             id: convId,
             memberId: memberId,
             unreadCount: conv.unreadCount ?? 0,
             pinned: conv.pinned ?? false,
-            lastMessagePreview: conv.lastMessagePreview ?? (mappedMessages[mappedMessages.length - 1]?.content ?? ''),
-            lastMessageAt: conv.lastMessageAt ?? (mappedMessages[mappedMessages.length - 1]?.sentAt ?? new Date().toISOString()),
+            lastMessagePreview:
+              conv.lastMessagePreview ??
+              mappedMessages[mappedMessages.length - 1]?.content ??
+              "",
+            lastMessageAt:
+              conv.lastMessageAt ??
+              mappedMessages[mappedMessages.length - 1]?.sentAt ??
+              new Date().toISOString(),
             messages: mappedMessages,
           });
         }
 
         // Sort and set
-        convsWithMessages.sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+        convsWithMessages.sort(
+          (a, b) =>
+            new Date(b.lastMessageAt).getTime() -
+            new Date(a.lastMessageAt).getTime(),
+        );
         setConversations(convsWithMessages);
 
         // set initial active conversation
-        const firstId = convsWithMessages[0]?.id ?? '';
+        const firstId = convsWithMessages[0]?.id ?? "";
         setActiveConversationId(firstId);
         return;
       } catch (e) {
@@ -163,7 +191,7 @@ export function ChatLayout() {
       }
     }
 
-    console.error('Failed to fetch initial chat data after retries');
+    console.error("Failed to fetch initial chat data after retries");
   }, []);
 
   useEffect(() => {
@@ -181,10 +209,16 @@ export function ChatLayout() {
     let mounted = true;
     const interval = setInterval(async () => {
       try {
-        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
-        const res = await fetch('/api/chat/conversations', { headers });
+        const res = await fetch("/api/chat/conversations", { headers });
         if (!res.ok) return;
         const convs = await res.json();
         if (!mounted) return;
@@ -197,55 +231,110 @@ export function ChatLayout() {
             if (!existing) {
               // New conversation - fetch messages
               (async () => {
-                const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+                const token = (() => {
+                  try {
+                    return localStorage.getItem("token");
+                  } catch {
+                    return null;
+                  }
+                })();
                 const headers: any = {};
                 if (token) headers.Authorization = `Bearer ${token}`;
-                const messagesRes = await fetch(`/api/chat/${convId}/messages`, { headers });
+                const messagesRes = await fetch(
+                  `/api/chat/${convId}/messages`,
+                  { headers },
+                );
                 const msgs = messagesRes.ok ? await messagesRes.json() : [];
-                const mappedMessages: Message[] = (msgs || []).map((m: any) => ({ id: getId(m) ?? m.id, authorId: m.authorId, content: m.content, sentAt: m.sentAt, status: m.status ?? 'delivered' }));
+                const mappedMessages: Message[] = (msgs || []).map(
+                  (m: any) => ({
+                    id: getId(m) ?? m.id,
+                    authorId: m.authorId,
+                    content: m.content,
+                    sentAt: m.sentAt,
+                    status: m.status ?? "delivered",
+                  }),
+                );
                 setConversations((cur) => {
-                  const merged = [...cur, {
-                    id: convId,
-                    memberId: conv.memberId ?? (Array.isArray(conv.memberIds) ? conv.memberIds[0] : undefined),
-                    unreadCount: conv.unreadCount ?? 0,
-                    pinned: conv.pinned ?? false,
-                    lastMessagePreview: conv.lastMessagePreview ?? (mappedMessages[mappedMessages.length - 1]?.content ?? ''),
-                    lastMessageAt: conv.lastMessageAt ?? (mappedMessages[mappedMessages.length - 1]?.sentAt ?? new Date().toISOString()),
-                    messages: mappedMessages,
-                  }];
-                  return merged.sort((a,b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+                  const merged = [
+                    ...cur,
+                    {
+                      id: convId,
+                      memberId:
+                        conv.memberId ??
+                        (Array.isArray(conv.memberIds)
+                          ? conv.memberIds[0]
+                          : undefined),
+                      unreadCount: conv.unreadCount ?? 0,
+                      pinned: conv.pinned ?? false,
+                      lastMessagePreview:
+                        conv.lastMessagePreview ??
+                        mappedMessages[mappedMessages.length - 1]?.content ??
+                        "",
+                      lastMessageAt:
+                        conv.lastMessageAt ??
+                        mappedMessages[mappedMessages.length - 1]?.sentAt ??
+                        new Date().toISOString(),
+                      messages: mappedMessages,
+                    },
+                  ];
+                  return merged.sort(
+                    (a, b) =>
+                      new Date(b.lastMessageAt).getTime() -
+                      new Date(a.lastMessageAt).getTime(),
+                  );
                 });
               })();
               continue;
             }
 
             const newLast = conv.lastMessageAt ?? existing.lastMessageAt;
-            if (new Date(newLast).getTime() > new Date(existing.lastMessageAt).getTime()) {
+            if (
+              new Date(newLast).getTime() >
+              new Date(existing.lastMessageAt).getTime()
+            ) {
               // New message arrived
-              existing.lastMessageAt = conv.lastMessageAt ?? existing.lastMessageAt;
-              existing.lastMessagePreview = conv.lastMessagePreview ?? existing.lastMessagePreview;
+              existing.lastMessageAt =
+                conv.lastMessageAt ?? existing.lastMessageAt;
+              existing.lastMessagePreview =
+                conv.lastMessagePreview ?? existing.lastMessagePreview;
               existing.unreadCount = (existing.unreadCount || 0) + 1;
 
               // create notification
               const noteId = `note-${generateMessageId()}`;
-              setNotifications((n) => [
-                ({ id: noteId, type: 'message', memberId: existing.memberId, title: 'New message', description: existing.lastMessagePreview, createdAt: new Date().toISOString() } as ChatNotification),
-                ...n,
-              ].slice(0, 10));
+              setNotifications((n) =>
+                [
+                  {
+                    id: noteId,
+                    type: "message",
+                    memberId: existing.memberId,
+                    title: "New message",
+                    description: existing.lastMessagePreview,
+                    createdAt: new Date().toISOString(),
+                  } as ChatNotification,
+                  ...n,
+                ].slice(0, 10),
+              );
 
               // play sound
               playNotificationSound();
             }
           }
 
-          return next.sort((a,b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+          return next.sort(
+            (a, b) =>
+              new Date(b.lastMessageAt).getTime() -
+              new Date(a.lastMessageAt).getTime(),
+          );
         });
       } catch (e) {
-        console.error('Polling chat failed', e);
+        console.error("Polling chat failed", e);
       }
     }, 5000);
 
-    return () => { mounted = false; clearInterval(interval); };
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [playNotificationSound]);
 
   const activeConversation = useMemo(
@@ -263,7 +352,10 @@ export function ChatLayout() {
       [...conversations].sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
-        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+        return (
+          new Date(b.lastMessageAt).getTime() -
+          new Date(a.lastMessageAt).getTime()
+        );
       }),
     [conversations],
   );
@@ -276,60 +368,94 @@ export function ChatLayout() {
       current.map((conversation) =>
         conversation.id !== conversationId
           ? conversation
-          : { ...conversation, unreadCount: 0, messages: conversation.messages.map((msg) => ({ ...msg, status: msg.authorId === conversation.memberId ? 'read' : msg.status })) },
+          : {
+              ...conversation,
+              unreadCount: 0,
+              messages: conversation.messages.map((msg) => ({
+                ...msg,
+                status:
+                  msg.authorId === conversation.memberId ? "read" : msg.status,
+              })),
+            },
       ),
     );
   }, []);
 
-  const handleSendMessage = useCallback(async (content: string) => {
-    if (!activeConversation) return;
-    const now = new Date().toISOString();
-    const id = `msg-${generateMessageId()}`;
+  const handleSendMessage = useCallback(
+    async (content: string) => {
+      if (!activeConversation) return;
+      const now = new Date().toISOString();
+      const id = `msg-${generateMessageId()}`;
 
-    // Optimistic update
-    setConversations((current) =>
-      current.map((conversation) =>
-        conversation.id !== activeConversation.id
-          ? conversation
-          : {
-              ...conversation,
-              lastMessagePreview: content,
-              lastMessageAt: now,
-              unreadCount: 0,
-              messages: [
-                ...conversation.messages,
-                { id, authorId: 'current-user', content, sentAt: now, status: 'sent' },
-              ],
-            },
-      ),
-    );
-
-    try {
-      const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
-      const res = await fetch(`/api/chat/${activeConversation.id}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ authorId: 'current-user', content }),
-      });
-
-      if (!res.ok) throw new Error('Failed to send');
-      const saved = await res.json();
-
-      // replace optimistic message id with real id from server
+      // Optimistic update
       setConversations((current) =>
-        current.map((conversation) => {
-          if (conversation.id !== activeConversation.id) return conversation;
-          return {
-            ...conversation,
-            messages: conversation.messages.map((m) => (m.id === id ? { ...m, id: getId(saved) ?? m.id, status: saved.status ?? 'delivered' } : m)),
-          };
-        }),
+        current.map((conversation) =>
+          conversation.id !== activeConversation.id
+            ? conversation
+            : {
+                ...conversation,
+                lastMessagePreview: content,
+                lastMessageAt: now,
+                unreadCount: 0,
+                messages: [
+                  ...conversation.messages,
+                  {
+                    id,
+                    authorId: "current-user",
+                    content,
+                    sentAt: now,
+                    status: "sent",
+                  },
+                ],
+              },
+        ),
       );
-    } catch (e) {
-      console.error('Send failed', e);
-      toast('Failed to send message');
-    }
-  }, [activeConversation]);
+
+      try {
+        const token = (() => {
+          try {
+            return localStorage.getItem("token");
+          } catch {
+            return null;
+          }
+        })();
+        const res = await fetch(`/api/chat/${activeConversation.id}/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ authorId: "current-user", content }),
+        });
+
+        if (!res.ok) throw new Error("Failed to send");
+        const saved = await res.json();
+
+        // replace optimistic message id with real id from server
+        setConversations((current) =>
+          current.map((conversation) => {
+            if (conversation.id !== activeConversation.id) return conversation;
+            return {
+              ...conversation,
+              messages: conversation.messages.map((m) =>
+                m.id === id
+                  ? {
+                      ...m,
+                      id: getId(saved) ?? m.id,
+                      status: saved.status ?? "delivered",
+                    }
+                  : m,
+              ),
+            };
+          }),
+        );
+      } catch (e) {
+        console.error("Send failed", e);
+        toast("Failed to send message");
+      }
+    },
+    [activeConversation],
+  );
 
   if (!activeConversation || !activeMember) {
     return null;
@@ -344,7 +470,11 @@ export function ChatLayout() {
         onSelectConversation={handleSelectConversation}
       />
       <div className="relative flex flex-1">
-        <ChatConversation member={activeMember} conversation={activeConversation} onSendMessage={handleSendMessage} />
+        <ChatConversation
+          member={activeMember}
+          conversation={activeConversation}
+          onSendMessage={handleSendMessage}
+        />
         <NotificationTray
           notifications={notifications.slice(0, 3)}
           members={members}
@@ -353,11 +483,17 @@ export function ChatLayout() {
             const conv = conversations.find((c) => c.memberId === memberId);
             if (conv) {
               setActiveConversationId(conv.id);
-              setConversations((current) => current.map((c) => (c.id === conv.id ? { ...c, unreadCount: 0 } : c)));
+              setConversations((current) =>
+                current.map((c) =>
+                  c.id === conv.id ? { ...c, unreadCount: 0 } : c,
+                ),
+              );
             }
             setNotifications((n) => n.filter((x) => x.id !== notificationId));
           }}
-          onDismiss={(notificationId) => setNotifications((n) => n.filter((x) => x.id !== notificationId))}
+          onDismiss={(notificationId) =>
+            setNotifications((n) => n.filter((x) => x.id !== notificationId))
+          }
         />
       </div>
     </div>
