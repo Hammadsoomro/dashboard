@@ -229,7 +229,7 @@ export function ChatLayout() {
               // create notification
               const noteId = `note-${generateMessageId()}`;
               setNotifications((n) => [
-                { id: noteId, type: 'message', memberId: existing.memberId, title: 'New message', description: existing.lastMessagePreview, createdAt: new Date().toISOString() },
+                ({ id: noteId, type: 'message', memberId: existing.memberId, title: 'New message', description: existing.lastMessagePreview, createdAt: new Date().toISOString() } as ChatNotification),
                 ...n,
               ].slice(0, 10));
 
