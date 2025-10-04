@@ -57,9 +57,9 @@ export function createServer() {
   app.post("/api/chat/:conversationId/messages", postMessage);
   app.post("/api/chat/conversations", createConversation);
 
-  // Distribution
-  app.get("/api/distributions", listDistributions);
-  app.post("/api/distributions", createDistribution);
+  // Distribution (admin-only)
+  app.get("/api/distributions", requireAuth, listDistributions);
+  app.post("/api/distributions", requireAuth, createDistribution);
 
   // Sales
   app.get('/api/sales', listSales);
