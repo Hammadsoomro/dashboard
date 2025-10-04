@@ -51,22 +51,13 @@ export default function TopNav() {
               <SunMedium className="h-5 w-5" />
             )}
           </button>
-          <div className="relative">
-            <button
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-gradient-to-br from-emerald-400 via-sky-400 to-indigo-500 text-white shadow-sm transition hover:brightness-110 dark:border-white/10"
-              aria-label="Account menu"
-            >
-              <CircleUserRound className="h-5 w-5" />
-            </button>
-            <div className="absolute right-0 mt-12 w-48 rounded-lg bg-white shadow-lg p-2 text-sm">
-              <button
-                onClick={() => { try { localStorage.removeItem('token'); } catch {} ; navigate('/login'); }}
-                className="w-full text-left px-2 py-2 hover:bg-slate-100 rounded-md"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={() => { try { localStorage.removeItem('token'); } catch {} ; navigate('/login'); }}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 bg-white text-neutral-600 shadow-sm transition hover:bg-white/90 dark:border-white/10 dark:bg-neutral-900/60 dark:text-neutral-200"
+            aria-label="Logout"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </header>
