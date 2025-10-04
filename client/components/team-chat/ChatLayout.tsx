@@ -88,9 +88,12 @@ export function ChatLayout() {
     while (attempt < maxRetries) {
       attempt += 1;
       try {
+        const token = (() => { try { return localStorage.getItem('token'); } catch { return null; } })();
+        const headers: any = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
         const [teamRes, convRes] = await Promise.all([
-          fetch('/api/team'),
-          fetch('/api/chat/conversations'),
+          fetch('/api/team', { headers }),
+          fetch('/api/chat/conversations', { headers }),
         ]);
 
         if (!teamRes.ok || !convRes.ok) {
