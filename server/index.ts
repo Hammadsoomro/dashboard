@@ -44,10 +44,10 @@ export function createServer() {
   app.post("/api/auth/login", login);
   app.get("/api/auth/me", requireAuth, me);
 
-  // Team members
-  app.get("/api/team", listTeam);
+  // Team members (per-admin teams)
+  app.get("/api/team", requireAuth, listTeam);
   app.post("/api/team", requireAuth, createMember);
-  app.get("/api/team/:id", getMember);
+  app.get("/api/team/:id", requireAuth, getMember);
   app.delete("/api/team/:id", requireAuth, deleteMember);
 
   // Chat
